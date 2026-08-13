@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { listaDeAcceso } from './acceso'
 
 /**
  * Configuración validada al arrancar. Si falta algo o está mal escrito, el proceso
@@ -47,16 +48,8 @@ const esquemaServidor = z.object({
    */
   ALUMNO_REAL_EMAIL: opcional(z.string().email()),
 
-  /** Correos del equipo autorizados a entrar, separados por comas. */
-  EMAILS_PERMITIDOS: z
-    .string()
-    .default('')
-    .transform((valor) =>
-      valor
-        .split(',')
-        .map((correo) => correo.trim().toLowerCase())
-        .filter(Boolean),
-    ),
+  /** Quién puede entrar: direcciones sueltas o dominios enteros (@learningheroes.com). */
+  EMAILS_PERMITIDOS: z.string().default('').transform(listaDeAcceso),
 
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
   CRON_SECRET: opcional(z.string().min(1)),

@@ -1,5 +1,18 @@
 # Wake Up Heroes
 
+> ### ⚠️ Repositorio de hackathon. Nada de aquí es real.
+>
+> Este proyecto se construyó en unas horas para un hackathon de **Learning Heroes** y es una prueba
+> de concepto, no un sistema en producción ni un repositorio filtrado.
+>
+> - **Los 300 alumnos son inventados.** El dataset es sintético: el dominio `example.com` está
+>   reservado por la [RFC 2606](https://www.rfc-editor.org/rfc/rfc2606) y el prefijo `+34 999` no
+>   corresponde a números reales. Ninguna persona real aparece en estos datos, y un envío accidental
+>   no alcanzaría a nadie.
+> - **Las cifras de negocio son ilustrativas**, calculadas sobre ese dataset inventado para
+>   dimensionar el problema. No son datos de Learning Heroes.
+> - **Nunca se ha escrito a un alumno real** con esta herramienta.
+
 Herramienta interna de Learning Heroes para recuperar alumnos que dejaron un curso a medias:
 selecciona a quién escribir con criterio auditable, redacta el email con Claude, lo pasa por
 revisión humana y mide si sirvió de algo contra un grupo de control.
@@ -77,6 +90,7 @@ Las tres que conviene mirar dos veces:
 | `SUPABASE_SECRET_KEY` | Solo servidor. Nunca debe llegar al cliente |
 | `ENVIO_REAL_HABILITADO` | Interruptor de seguridad. En `false`, ningún email sale al exterior |
 | `EMAIL_OPERADOR` y `ALUMNO_REAL_EMAIL` | Las dos únicas direcciones que pueden recibir envíos reales |
+| `EMAILS_PERMITIDOS` | Quién entra al panel. Admite direcciones sueltas y dominios enteros: `polmarza@gmail.com,@learningheroes.com` |
 
 ---
 

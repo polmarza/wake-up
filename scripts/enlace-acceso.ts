@@ -13,6 +13,7 @@
 
 import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
+import { listaDeAcceso, correoPermitido } from '../src/lib/config/acceso'
 
 config({ path: '.env.local' })
 
@@ -31,12 +32,9 @@ async function main() {
     process.exit(1)
   }
 
-  const permitidos = (process.env.EMAILS_PERMITIDOS ?? '')
-    .split(',')
-    .map((c) => c.trim().toLowerCase())
-    .filter(Boolean)
+  const permitidos = listaDeAcceso(process.env.EMAILS_PERMITIDOS)
 
-  if (permitidos.length > 0 && !permitidos.includes(correo.toLowerCase())) {
+  if (!correoPermitido(correo, permitidos)) {
     console.error(
       `\n${correo} no está en EMAILS_PERMITIDOS, así que el middleware lo echaría nada más entrar.\n` +
         `Añádelo a la lista o usa uno de estos: ${permitidos.join(', ')}\n`,

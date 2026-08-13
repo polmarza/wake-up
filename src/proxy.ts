@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { listaDeAcceso, correoPermitido } from '@/lib/config/acceso'
 
 /**
  * Refresca la sesión y protege todo lo que no sea explícitamente público.
@@ -47,19 +48,16 @@ export async function proxy(request: NextRequest) {
   }
 
   // Lista blanca: aunque alguien consiga un enlace mágico válido, si su correo no
-  // está en el equipo no entra.
-  const permitidos = (process.env.EMAILS_PERMITIDOS ?? '')
-    .split(',')
-    .map((correo) => correo.trim().toLowerCase())
-    .filter(Boolean)
+  // está en el equipo no entra. Admite direcciones sueltas y dominios enteros.
+  const permitidos = listaDeAcceso(process.env.EMAILS_PERMITIDOS)
 
-  const correo = user.email?.toLowerCase() ?? ''
-
-  if (permitidos.length > 0 && !permitidos.includes(correo)) {
+  if (!correoPermitido(user.email ?? '', permitidos)) {
     await supabase.auth.signOut()
     const destino = request.nextUrl.clone()
     destino.pathname = '/login'
-    destino.searchParams.set('error', 'no-autorizado')
+    // Se distinguen los dos casos porque se arreglan de forma distinta: uno es que no
+    // eres del equipo; el otro, que nadie configuró la variable y no entra nadie.
+    destino.searchParams.set('error', permitidos.length === 0 ? 'sin-lista' : 'no-autorizado')
     return NextResponse.redirect(destino)
   }
 
