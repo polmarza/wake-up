@@ -3,70 +3,17 @@
 Archivo de referencia para cualquier agente de codificación que trabaje en este proyecto.
 Lee este archivo completo antes de hacer cualquier cambio.
 
-## Estado del proyecto y arranque
+## Arranque
 
-Antes de hacer cualquier cosa, comprueba el estado del repositorio:
+Antes de hacer cualquier cosa, lee todos los archivos de `docs/`. Son la fuente de verdad del
+proyecto y describen decisiones ya tomadas: no las reabras sin motivo.
 
-1. Lee todos los archivos de `docs/`
-2. Comprueba si existe la carpeta `.template/`. Si existe, este repo sigue siendo la plantilla
-   sin inicializar: hay andamiaje, todavía no hay proyecto.
-3. Si los documentos están vacíos o incompletos (solo tienen comentarios, sin contenido real):
-   - No escribas código
-   - No rellenes nada todavía
-   - Empieza con esta pregunta: "¿Qué quieres construir y para quién?"
-   - A partir de la respuesta, haz las preguntas necesarias para completar 
-     los documentos de docs/ en este orden: prd.md → business.md → 
-     design-system.md → architecture.md → data-model.md → roadmap.md → user-flows.md
-   - Confirma con el usuario antes de pasar al siguiente documento
-   - Cuando todos estén rellenos, ejecuta la **inicialización del proyecto** (sección
-     siguiente) y solo después pregunta: "¿Empezamos a construir?"
+Empieza por `docs/prd.md` (qué construimos y con qué prioridades) y `docs/architecture.md` (stack y
+decisiones técnicas). Si vas a tocar la base de datos, `docs/data-model.md` es obligatorio antes de
+escribir cualquier migración.
 
-4. Si los documentos ya tienen contenido: lee todo lo que haya en `docs/` antes de actuar.
-   Si además `.template/` sigue existiendo, la inicialización quedó a medias: avisa al usuario
-   y ofrécete a completarla antes de seguir.
-
----
-
-## Inicialización del proyecto (una sola vez)
-
-Esta plantilla se distribuye con documentación que habla **de la plantilla**, no del proyecto.
-En cuanto los documentos de `docs/` estén rellenos, conviértela en el repo de *este* proyecto.
-Hazlo por iniciativa propia, sin esperar a que el usuario lo pida.
-
-Puedes lanzar el proceso completo con `/init-proyecto`.
-
-**Checklist de inicialización:**
-
-1. **`README.md`** — reescríbelo entero para el proyecto, a partir de lo que hay en `docs/`.
-   Debe explicar el producto, no la plantilla. Estructura sugerida: nombre y descripción de
-   una línea, qué problema resuelve, requisitos previos, variables de entorno (referencia a
-   `.env.example`), instalación y desarrollo (`pnpm install`, `pnpm dev`), estructura de
-   carpetas, cómo contribuir (referencia a `CLAUDE.md` y al protocolo) y estado del proyecto.
-2. **`CLAUDE.md`** — rellena los placeholders de este mismo archivo: nombre, descripción,
-   estado, stack tecnológico, estructura de carpetas, convenciones de código y "Qué NO hacer".
-   Borra los comentarios `<!-- ... -->` que ya no apliquen, esta sección de inicialización
-   (deja de tener sentido una vez hecha), el comando `.claude/commands/init-proyecto.md` y las
-   referencias a `.template/` del arranque y del protocolo de changelog. El "Protocolo de MCPs"
-   se queda: sigue aplicando cada vez que entre una integración nueva.
-3. **`LICENSE`** — sustituye `[YEAR]` y `[AUTHOR]` por los valores reales. Pregunta el nombre
-   del autor si no lo sabes.
-4. **`.env.example`** — deja solo las variables que el stack elegido necesita de verdad.
-5. **MCPs** — con el stack ya decidido, pregunta al usuario qué servidores MCP quiere y con qué
-   alcance, siguiendo el "Protocolo de MCPs" (o lanza `/mcp-setup`).
-6. **`changelog/`** — debe quedar sin entradas heredadas. Crea la primera entrada real del
-   proyecto (tipo: Configuración) describiendo la inicialización, y quita de
-   `changelog/README.md` la referencia a la plantilla (o borra el archivo).
-7. **`mejoras/backlog.md`** — borra el ejemplo comentado y déjalo listo para entradas reales.
-8. **`.template/`** — bórrala entera (`rm -rf .template`). Es el historial de la plantilla, no
-   del proyecto.
-9. **Verificación final** — busca referencias sobrantes:
-   `grep -ril "plantilla\|template" . --exclude-dir=.git --exclude-dir=node_modules`.
-   Revisa cada resultado y corrígelo si habla de la plantilla en lugar del proyecto.
-
-**Regla general:** después de la inicialización, ningún archivo del repo debe describirse a sí
-mismo como plantilla ni explicar cómo usar la plantilla. Toda la documentación habla del
-producto que se está construyendo. Si más adelante encuentras un resto de la plantilla en
-cualquier archivo, corrígelo en esa misma sesión.
+Si algún documento se ha quedado desincronizado con el código, avísalo y ofrécete a corregirlo en
+la misma sesión.
 
 ---
 
@@ -166,97 +113,105 @@ es el comportamiento esperado, no un fallo.
 
 ## Descripción del proyecto
 
-<!-- Escribe aquí 3-4 líneas que expliquen qué es este proyecto, qué problema resuelve y para quién.
-     Ejemplo:
-     "Plataforma web para que coleccionistas de vinilos cataloguen y compartan sus colecciones.
-     Usuario objetivo: adultos 25-45 con colecciones físicas que quieren digitalizar su catálogo.
-     Stack principal: Next.js + Supabase + Vercel." -->
-
-**Nombre:** <!-- nombre-del-proyecto -->
-**Descripción:** <!-- una frase -->
-**Estado actual:** <!-- En desarrollo / Beta / Producción -->
+**Nombre:** Wake Up Heroes
+**Descripción:** Herramienta interna de Learning Heroes que recupera alumnos que dejaron un curso a
+medias: elige a quién escribir con criterio auditable, redacta el email con Claude, lo pasa por
+revisión humana y mide el resultado contra un grupo de control.
+**Estado actual:** En desarrollo (MVP de hackathon)
 
 ---
 
 ## Documentación de referencia
 
-Lee todo lo que haya en `docs/` antes de empezar a trabajar. Si algún archivo está vacío
-(solo tiene comentarios) o incompleto, pregunta al usuario para rellenarlo antes de actuar.
-
-Si un archivo de `docs/` no existe todavía, pregunta antes de asumir.
+| Documento | Cuándo consultarlo |
+|---|---|
+| `docs/prd.md` | Antes de añadir o quitar cualquier funcionalidad |
+| `docs/business.md` | Métricas de éxito, riesgos y restricciones |
+| `docs/architecture.md` | Stack, estructura de carpetas y decisiones ya tomadas |
+| `docs/data-model.md` | **Obligatorio antes de cualquier migración** |
+| `docs/design-system.md` | Antes de crear cualquier componente |
+| `docs/user-flows.md` | Flujos con sus casos de error |
+| `docs/roadmap.md` | Qué toca ahora y qué está descartado |
+| `docs/testing.md` | Qué se testea y qué no |
 
 ---
 
 ## Stack tecnológico
 
-<!-- Completa esto con el stack real del proyecto.
-     Ejemplo:
-     - Framework: Next.js 14 (App Router)
-     - Base de datos: Supabase (PostgreSQL + Auth + Storage)
-     - Estilos: Tailwind CSS + shadcn/ui
-     - Despliegue: Vercel
-     - Pagos: Stripe
-     - Email: Resend -->
-
-- Framework: <!-- ... -->
-- Base de datos: <!-- ... -->
-- Estilos: <!-- ... -->
-- Despliegue: <!-- ... -->
-- Otras integraciones: <!-- ... -->
+- **Framework:** Next.js 16 (App Router) + TypeScript estricto
+- **Base de datos:** Supabase (PostgreSQL) con RLS activo
+- **Autenticación:** Supabase Auth, magic link con lista blanca de correos
+- **Estilos:** Tailwind CSS + shadcn/ui con los tokens de marca de Learning Heroes
+- **Generación de texto:** Claude API (`claude-opus-5`, configurable con `ANTHROPIC_MODEL`)
+- **Email:** Resend
+- **Gráficas:** Recharts
+- **Despliegue:** Vercel (+ Vercel Cron)
 
 ---
 
 ## Estructura de carpetas
 
-<!-- Documenta aquí la estructura real del proyecto una vez inicializado.
-     Ejemplo:
-     src/
-     ├── app/          → rutas (App Router)
-     ├── components/   → componentes reutilizables
-     ├── lib/          → utilidades, clientes de servicios externos
-     ├── hooks/        → custom hooks
-     └── types/        → tipos TypeScript compartidos
-     
-     docs/             → documentación del proyecto (ver sección anterior)
-     changelog/        → registro de cambios (ver protocolo más abajo)
-     mejoras/          → ideas futuras no implementadas -->
+```
+docs/                → Documentación funcional y técnica
+src/app/(app)/       → Rutas autenticadas: cola, alumnos, plantillas, resultados
+src/app/api/         → Cron y webhook de Resend (los únicos endpoints HTTP)
+src/proxy.ts         → Sesión y protección de rutas (Next 16 renombró middleware a proxy)
+src/app/baja/[token] → Página pública de baja
+src/components/      → ui/ (shadcn), cola/, resultados/
+src/lib/candidatos/  → Lectura de la vista de elegibilidad y priorización
+src/lib/bandit/      → Thompson sampling y actualización de priors
+src/lib/generacion/  → Prompts, llamada a Claude y validación
+src/lib/email/       → Render del email y cliente de Resend
+src/lib/supabase/    → Clientes y tipos generados
+src/lib/config/      → Validación del entorno y guardarraíl de envío real
+supabase/migrations/ → Migraciones SQL en orden
+supabase/seed/       → Dataset sintético
+supabase/tests/      → Tests de la política de supresión
+scripts/             → Importación del dataset sintético
+```
+
+Detalle completo en `docs/architecture.md`.
 
 ---
 
 ## Convenciones de código
 
-<!-- Define aquí las reglas de estilo específicas del proyecto.
-     Ejemplo:
-     - TypeScript estricto. No usar `any`.
-     - Componentes en PascalCase, archivos en kebab-case.
-     - Toda función async debe manejar errores explícitamente.
-     - No usar `console.log` en producción.
-     - Comentarios en español. -->
-
-- Gestor de paquetes: pnpm v11. No usar npm ni yarn.
-- Idioma de comentarios y variables: <!-- español / inglés -->
-- Nombrado de componentes: <!-- PascalCase -->
-- Nombrado de archivos: <!-- kebab-case -->
-- <!-- Añade más reglas según el proyecto -->
+- Gestor de paquetes: **pnpm v11**. No usar npm ni yarn.
+- TypeScript estricto. No usar `any`.
+- Idioma de comentarios, variables y nombres de dominio: **español**. El dominio ya está en español
+  (`alumnos`, `envios`, `plantillas`, `candidatos_reactivacion`); mezclarlo con inglés obliga a
+  traducir mentalmente en cada consulta.
+- Componentes en `PascalCase`, archivos en `kebab-case`.
+- Las mutaciones se hacen con **Server Actions**. Los únicos endpoints HTTP son los que consume un
+  tercero: el cron y el webhook de Resend.
+- Las claves de Claude, de Resend y la de servicio de Supabase **solo existen en el servidor**.
+- Lo que decide *a quién* se escribe vive en `lib/candidatos/` y en SQL. Lo que decide *qué* se
+  escribe vive en `lib/generacion/`. No se mezclan: es lo que permite auditar la supresión sin leer
+  prompts.
 
 ---
 
 ## Qué NO hacer
 
-<!-- Lista de antipatrones específicos de este proyecto.
-     Ejemplo:
-     - No modificar el esquema de Supabase directamente desde el cliente; usar migraciones.
-     - No almacenar tokens en localStorage; usar cookies httpOnly.
-     - No crear componentes nuevos sin consultar docs/design-system.md primero.
-     - No hacer fetch directo a APIs externas desde componentes; usar server actions o route handlers. -->
-
 - No usar `npm` ni `yarn`. Siempre `pnpm` (v11).
+- **No saltarse la vista `candidatos_reactivacion`.** Es la única fuente de candidatos. No escribas
+  consultas directas a `alumnos` para decidir a quién enviar, ni siquiera "solo para probar".
+- **No cambiar las condiciones de la vista sin dejar rastro.** Es un cambio de política de contacto:
+  migración + actualización de `docs/data-model.md` + entrada en `changelog/` + test.
+- **No enviar a las direcciones del dataset.** Son `@example.com` y rebotarían. El envío real solo
+  va a `EMAIL_OPERADOR` y solo con `ENVIO_REAL_HABILITADO=true`.
+- **No dejar que el LLM decida a quién se escribe.** El prompt recibe la ficha de un alumno que ya
+  ha sido declarado elegible; nunca la lista completa ni los criterios de selección.
+- **No permitir que el modelo prometa nada** que la escuela no pueda cumplir: descuentos, plazas
+  reservadas, fechas límite. El prompt lo prohíbe y la revisión humana lo verifica.
+- No eliminar filas de `envios`. Es el registro de auditoría: un envío descartado se marca, no se
+  borra.
+- No modificar el esquema desde el panel de Supabase sin su migración correspondiente en el repo.
 - No escribir claves ni tokens reales en `.mcp.json`: el archivo se commitea. Usa `${VARIABLE}` y
   guarda el valor en `.env.local` o en el entorno del shell.
 - No instalar servidores MCP por tu cuenta: pregunta antes, según el "Protocolo de MCPs".
 - No ejecutar un `claude mcp add` copiado de una fuente que no sea el proveedor oficial, ni sin
   haberle enseñado antes el comando al usuario.
-- <!-- ... -->
 
 ---
 
@@ -289,10 +244,6 @@ Usa `/changelog` para crear la entrada siguiendo el formato del proyecto.
 
 Si la carpeta `changelog/` no existe, créala antes de escribir el archivo.
 
-Mientras el repo siga siendo la plantilla sin inicializar (existe `.template/`), los cambios
-sobre el andamiaje se registran en `.template/changelog/`, no en `changelog/`. Así quien use la
-plantilla arranca con el changelog limpio.
-
 ### 2. Actualizar la documentación afectada
 
 Si el cambio afecta algo que está documentado en `docs/`, actualiza ese archivo en la misma sesión. No dejes documentación desincronizada.
@@ -309,7 +260,7 @@ Ejemplos:
 Si el cambio afecta cómo se instala, inicializa o usa el proyecto, actualizar `README.md`.
 
 El `README.md` describe siempre el proyecto en su estado actual. Si encuentras en él (o en
-cualquier doc) restos de la plantilla, reescríbelos en esta misma sesión.
+cualquier doc) algo que ya no se corresponde con el código, corrígelo en esta misma sesión.
 
 ### 4. Revisión de seguridad
 
@@ -356,3 +307,13 @@ Si la carpeta `mejoras/` no existe, créala.
 
 <!-- Cualquier otra instrucción específica del proyecto que no encaje en las secciones anteriores.
      Ejemplos: credenciales de entorno necesarias, comandos de desarrollo, quirks conocidos del stack. -->
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

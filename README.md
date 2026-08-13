@@ -1,85 +1,219 @@
-# project-template
+# Wake Up Heroes
 
-Plantilla para empezar proyectos cuando trabajas con agentes de código (Claude Code, Cursor y compañía) sin que se pongan a escribir antes de entender qué estás construyendo.
-
----
-
-## ¿Qué es esto?
-
-Una plantilla de repositorio que impone un protocolo simple: **antes de tocar código, el agente lee la documentación del proyecto**.
-
-Si los documentos están vacíos, empieza haciendo preguntas — no escribiendo código. Si están rellenos, arranca con todo el contexto cargado y sin tener que volver a explicárselo en cada sesión.
-
-Es agnóstica al stack. El protocolo funciona igual con Next.js, Astro, FastAPI o cualquier otra cosa que decidas usar.
+Herramienta interna de Learning Heroes para recuperar alumnos que dejaron un curso a medias:
+selecciona a quién escribir con criterio auditable, redacta el email con Claude, lo pasa por
+revisión humana y mide si sirvió de algo contra un grupo de control.
 
 ---
 
-## ¿Para quién es?
+## Qué problema resuelve
 
-- Founders y equipos pequeños que construyen productos con ayuda de agentes de IA y quieren reducir el rework.
-- Cualquiera que se haya cansado de explicarle al modelo el mismo contexto en cada conversación nueva.
+Learning Heroes tiene 300 alumnos registrados. **183 están inactivos** y 77 completaron su curso sin
+que nadie les ofreciera el siguiente paso. Dos de cada tres personas que pagaron están hoy fuera del
+circuito.
 
----
+Escribirles uno a uno no escala: el email que necesita quien se quedó en la sesión 2 de 12 porque el
+nivel le venía grande no se parece al que necesita quien terminó el curso entero. Y mandarles a
+todos el mismo texto quema la lista, dispara las bajas y, con 33 alumnos sin consentimiento de
+marketing y 19 dados de baja, deja de ser un problema de conversión para ser uno legal.
 
-## ¿Qué hay dentro?
+Wake Up Heroes hace tres cosas:
 
-- **`CLAUDE.md`** — Contrato de entrada para el agente. Define qué leer, cómo registrar cambios, cómo configurar los MCPs del stack, qué no hacer y cuándo ejecutar revisiones de seguridad.
-- **`docs/`** — Ocho archivos vivos que capturan las decisiones que típicamente se pierden entre conversaciones: producto, arquitectura, modelo de datos, design system, business, roadmap, flujos de usuario y testing.
-- **`changelog/`** — Registro estructurado de cada cambio importante: qué, cuándo y por qué. **Llega vacío**: solo con el archivo que explica el formato.
-- **`mejoras/`** — Backlog de ideas que no entran en el sprint actual pero no se quieren perder.
-- **`.claude/`** — Configuración de Claude Code con permisos sensatos y slash commands custom para no tener que recordar el protocolo de memoria.
-- **`.github/`** — Plantillas de pull request e issues alineadas con el protocolo.
-- **`.template/`** — Historial de la plantilla en sí. Se borra al inicializar tu proyecto, así no arrastras cambios que no son tuyos.
-- Lo aburrido pero necesario: `.gitignore`, `.env.example`, `LICENSE`.
+1. **Decide a quién se puede escribir** aplicando la política de supresión en SQL —consentimiento,
+   rebotes, quejas, techo de intentos, periodo de enfriamiento— y no en la cabeza de nadie.
+2. **Redacta el email** con Claude, usando el nombre, el curso, la sesión exacta donde se quedó el
+   alumno y el motivo de abandono que declaró.
+3. **Mide si funciona** contra un *holdout* del 15% que nunca recibe nada, y aprende qué variantes
+   convierten mediante Thompson sampling sobre los priors Beta de cada plantilla.
 
----
-
-## ¿Cómo funciona el protocolo?
-
-1. **Cualquier sesión empieza leyendo `docs/`.** Si están vacíos o incompletos, el agente pregunta antes de actuar.
-2. **Cada cambio importante deja registro en `changelog/`** con qué se hizo, qué se modificó y por qué.
-3. **Si el cambio afecta a algo documentado, se actualiza el doc en la misma sesión.** No hay documentación desincronizada.
-4. **Con el stack ya decidido, el agente pregunta qué MCPs quieres** y con qué alcance: los globales que ya tengas, o servidores configurados a nivel de proyecto en `.mcp.json`. No instala nada por su cuenta ni antes de que haya stack.
-5. **Antes de mergear a producción**, se ejecuta `/security-review` para detectar vulnerabilidades, credenciales filtradas y problemas comunes.
-6. **Las ideas que no entran ahora se anotan en `mejoras/`** sin interrumpir el flujo actual.
+Ningún email sale sin que una persona lo lea y le dé al botón.
 
 ---
 
-## ¿Cómo empezar?
+## Estado del proyecto
 
-1. Usa este repo como plantilla en GitHub (botón **"Use this template"**) o clónalo directamente.
-2. Abre el proyecto en Claude Code, Cursor o el agente que prefieras.
-3. Cuando el agente lea `CLAUDE.md` por primera vez, te preguntará qué quieres construir y para quién. Responde y deja que vaya completando los docs contigo, uno a uno.
-4. Con los docs rellenos, el agente **inicializa el proyecto**: reescribe este README para tu producto, rellena los datos de `CLAUDE.md`, ajusta la licencia y `.env.example`, borra `.template/` y deja el changelog con su primera entrada real. Lo hace solo; si quieres forzarlo, usa `/init-proyecto`.
-5. A partir de ahí, arranca el desarrollo. Cada sesión nueva entra ya con todo el contexto cargado.
+**En desarrollo** — MVP de hackathon. **Fases 0, 1 y 2 completadas**:
 
----
+- [x] Proyecto Next.js 16 + TypeScript + Tailwind 4
+- [x] Migraciones SQL (esquema, flujo de aprobación, RLS, funciones, baja pública)
+- [x] Script de importación del dataset, idempotente y con verificación de la supresión
+- [x] Autenticación con magic link y lista blanca
+- [x] Cola de candidatos en modo lectura
+- [x] Tests de la política de supresión (a la espera de base de datos de test)
+- [x] Base de datos en marcha: migraciones aplicadas y dataset cargado (**97 candidatos elegibles**)
+- [x] Thompson sampling sobre los priors Beta de cada plantilla
+- [x] Generación del borrador con Claude, validada y con reintento
+- [x] Pantalla de revisión: ficha, borrador editable, aprobar / descartar / probar en tu buzón
+- [x] Dashboard de resultados con el uplift contra el holdout
+- [x] Baja pública por token, seguimiento de resultados, webhook de Resend y cron diario
 
-## Convenciones
+**Fases 0, 1 y 2 completas.** Del roadmap solo quedan los filtros de la cola y la Fase 3.
 
-- Gestor de paquetes: **pnpm v11** (no npm, no yarn).
-- El resto de convenciones (idioma, naming, estilo) se decide al rellenar `CLAUDE.md` y `docs/architecture.md`.
-
----
-
-## Adaptar para tu proyecto
-
-No tienes que hacerlo a mano: el agente lo hace en la inicialización, siguiendo el checklist de la sección "Inicialización del proyecto" de `CLAUDE.md`. Lo que cambia:
-
-| Archivo | Qué pasa con él |
-|---------|-----------------|
-| `README.md` | Se reescribe entero para tu producto (este texto desaparece) |
-| `CLAUDE.md` | Se rellenan nombre, stack, estructura y convenciones |
-| `LICENSE` | Se sustituyen `[YEAR]` y `[AUTHOR]` |
-| `.env.example` | Se queda solo con las variables de tu stack |
-| `changelog/` | Recibe la primera entrada real del proyecto |
-| `mejoras/backlog.md` | Se limpia el ejemplo |
-| `.template/` | Se borra |
-
-El criterio es simple: cuando termina la inicialización, **ningún archivo del repo se describe a sí mismo como plantilla**. Todo habla de tu proyecto.
+Los datos son **100% sintéticos**: dominio `example.com` y prefijo `+34999`, no entregables por
+diseño, de modo que un envío accidental no alcanza a nadie. La única excepción es el *alumno real*
+opcional que añade el seed (ver `ALUMNO_REAL_*` en `.env.example`), pensado para poder ver un email
+de verdad en la demo.
 
 ---
 
-## Licencia
+## Requisitos previos
 
-MIT. Ver [`LICENSE`](./LICENSE).
+- **Node.js 20+**
+- **pnpm v11** — no usar npm ni yarn
+- Cuenta de **Supabase** (plan gratuito basta)
+- Clave de la **Claude API**
+- Cuenta de **Resend** (solo para el envío real de prueba)
+
+---
+
+## Variables de entorno
+
+Copia `.env.example` como `.env.local` y rellena los valores. Nunca comitees `.env.local`.
+
+Las tres que conviene mirar dos veces:
+
+| Variable | Para qué |
+|---|---|
+| `SUPABASE_SECRET_KEY` | Solo servidor. Nunca debe llegar al cliente |
+| `ENVIO_REAL_HABILITADO` | Interruptor de seguridad. En `false`, ningún email sale al exterior |
+| `EMAIL_OPERADOR` y `ALUMNO_REAL_EMAIL` | Las dos únicas direcciones que pueden recibir envíos reales |
+
+---
+
+## Instalación y desarrollo
+
+```bash
+pnpm install
+```
+
+```bash
+pnpm dev
+```
+
+Antes de nada hace falta un proyecto de Supabase con las migraciones de
+`supabase/migrations/` aplicadas **en orden**. Después, carga del dataset (idempotente, se puede
+reejecutar):
+
+```bash
+pnpm seed
+```
+
+El seed no solo importa: verifica que la vista devuelve candidatos y que **ningún alumno suprimido
+se ha colado en la cola**. Si algo de eso falla, aborta con error en vez de dejarte creer que todo
+fue bien.
+
+Tests:
+
+```bash
+pnpm test
+```
+
+---
+
+## Si el enlace de acceso no llega
+
+El correo de acceso **no lo manda Resend**: lo manda Supabase Auth con su servicio de email
+integrado, que tiene dos límites importantes y poco visibles:
+
+- **2 mensajes por hora.** Pedir varios enlaces seguidos agota la cuota y los siguientes intentos
+  fallan con `over_email_send_rate_limit`.
+- **Solo a direcciones preautorizadas** del equipo de la organización en Supabase. Cualquier otra
+  recibe *Email address not authorized*.
+
+Para saber qué está pasando de verdad (la pantalla de login oculta el error a propósito, para no
+revelar quién pertenece al equipo):
+
+```bash
+pnpm tsx scripts/probar-login.ts
+```
+
+Para entrar ahora mismo sin depender del correo, genera el enlace por consola con la clave de
+servicio:
+
+```bash
+pnpm tsx scripts/enlace-acceso.ts
+```
+
+Es de un solo uso y caduca. No lo compartas: quien lo tenga entra con esa cuenta.
+
+**La solución definitiva** es configurar SMTP propio en Supabase (Authentication → Emails → SMTP
+Settings). Resend sirve para esto, así que la misma cuenta cubre el acceso al panel y el envío real
+de prueba.
+
+---
+
+## Webhook de Resend
+
+El webhook es lo que hace que un rebote o una queja de spam saquen al alumno de la cola sin que
+nadie tenga que acordarse. **Resend llama desde sus servidores, así que el endpoint tiene que ser
+público y HTTPS**: en `localhost` no hay nada que configurar.
+
+Orden que funciona:
+
+1. **Despliega** (o levanta un túnel con `ngrok` / `cloudflared` si quieres probar en local).
+2. **Da de alta el webhook**, por panel —Resend → Webhooks → Add Webhook— o por API:
+
+   ```bash
+   pnpm tsx scripts/configurar-webhook.ts https://tu-app.vercel.app
+   ```
+
+   Suscríbete solo a los eventos que el endpoint entiende: `email.delivered`, `email.opened`,
+   `email.clicked`, `email.bounced`, `email.complained` y `email.failed`.
+3. **Guarda la clave de firma** (`whsec_…`) en `RESEND_WEBHOOK_SECRET`, en el entorno de la app.
+   Sin ella el endpoint responde `503` y no procesa nada; con una firma que no cuadra, `401`.
+
+**Hasta que no hagas un envío real, el webhook no tiene nada que hacer.** Los eventos se casan con
+el envío por `resend_id`, y ese campo solo se rellena cuando el email sale de verdad
+(`ENVIO_REAL_HABILITADO=true` y destinatario en la lista permitida). Antes de eso, todo evento que
+llegue se responde con `envío desconocido`, que es el comportamiento correcto.
+
+---
+
+## Estructura de carpetas
+
+```
+docs/                → Documentación funcional y técnica. Leer antes de tocar código
+src/app/             → Rutas (App Router). La cola de revisión es la pantalla principal
+src/lib/candidatos/  → Lectura de la vista de elegibilidad y priorización
+src/lib/bandit/      → Thompson sampling y actualización de priors
+src/lib/generacion/  → Prompts, llamada a Claude y validación del resultado
+src/lib/email/       → Render del email y cliente de Resend
+src/lib/resultados/  → Agregación del uplift, segmentos y plantillas
+supabase/migrations/ → Migraciones SQL en orden
+scripts/             → Importación del dataset y utilidades de diagnóstico
+changelog/           → Registro de cambios importantes
+mejoras/             → Backlog de ideas que no entran en el sprint
+```
+
+El detalle está en [docs/architecture.md](docs/architecture.md).
+
+---
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [prd.md](docs/prd.md) | Qué construimos, para quién y con qué prioridades |
+| [business.md](docs/business.md) | Contexto económico, métricas de éxito y riesgos |
+| [architecture.md](docs/architecture.md) | Stack, estructura y decisiones técnicas |
+| [data-model.md](docs/data-model.md) | Tablas, vista de elegibilidad, RLS y migraciones |
+| [design-system.md](docs/design-system.md) | Paleta, tipografía y componentes |
+| [user-flows.md](docs/user-flows.md) | Flujos con diagramas y casos de error |
+| [roadmap.md](docs/roadmap.md) | Fases y qué se ha descartado |
+| [testing.md](docs/testing.md) | Qué se testea y por qué |
+
+---
+
+## Cómo contribuir
+
+Lee [CLAUDE.md](CLAUDE.md) antes de hacer cambios. En resumen:
+
+1. Rama por funcionalidad, nunca directo a `main`.
+2. Todo cambio importante lleva su entrada en `changelog/` (`/changelog`).
+3. Si el cambio afecta a algo documentado en `docs/`, se actualiza en la misma sesión.
+4. Los PRs los abre el agente con la plantilla rellena y el checklist verificado.
+5. Antes de mergear a producción, `/security-review`.
+
+**Regla que no se negocia:** cualquier cambio en las condiciones de la vista
+`candidatos_reactivacion` es un cambio de política de contacto. Se documenta, se registra en el
+changelog y se acompaña de un test.

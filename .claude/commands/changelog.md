@@ -5,4 +5,4 @@ Crea una nueva entrada en `changelog/` siguiendo el protocolo del proyecto.
 3. Rellena las tres secciones obligatorias: qué se hizo, qué archivos se modificaron, por qué.
 4. Si el cambio afecta algún documento de `docs/`, recuérdale al usuario que hay que actualizarlo en esta misma sesión.
 
-Si existe la carpeta `.template/` y el cambio es sobre la plantilla en sí (CLAUDE.md, docs vacíos, comandos, plantillas de GitHub), escribe la entrada en `.template/changelog/` en lugar de `changelog/`. La carpeta `changelog/` se reserva para el proyecto que use la plantilla.
+Si el cambio toca las condiciones de la vista `candidatos_reactivacion`, dilo explícitamente en la entrada: es un cambio de política de contacto, no un detalle técnico, y exige además migración, actualización de `docs/data-model.md` y test.

@@ -1,0 +1,6 @@
+# Scripts de instalación permitidos. pnpm los bloquea por defecto: cada uno se
+# habilita a conciencia.
+allowBuilds:
+  esbuild: true # lo necesita vitest para transpilar
+  unrs-resolver: true # resolución de módulos de eslint-config-next
+  sharp: false # optimización de imágenes: el proyecto no la usa
