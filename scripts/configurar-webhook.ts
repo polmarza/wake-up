@@ -10,6 +10,7 @@
  * llenaría el log de eventos que se descartan.
  */
 
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { config } from 'dotenv'
 import { Resend } from 'resend'
 
@@ -54,12 +55,31 @@ async function main() {
     process.exit(1)
   }
 
+  const secreto = data!.signing_secret
+
   console.log(`\nWebhook creado: ${data!.id}`)
   console.log(`  endpoint: ${endpoint}`)
   console.log(`  eventos : ${EVENTOS.join(', ')}`)
-  console.log('\nAñade esta línea al entorno de la app (en Vercel, y en .env.local si pruebas en local):\n')
-  console.log(`RESEND_WEBHOOK_SECRET=${data!.signing_secret}`)
-  console.log('\nSin esa variable el endpoint responde 503 y no procesa nada.\n')
+
+  // Se guarda en .env.local (ignorado por git) en vez de dejarlo solo por pantalla:
+  // una clave que hay que copiar de un scroll de terminal se pierde o acaba pegada
+  // donde no debe.
+  const ruta = '.env.local'
+  if (existsSync(ruta)) {
+    const contenido = readFileSync(ruta, 'utf-8')
+    if (/^RESEND_WEBHOOK_SECRET=\s*$/m.test(contenido)) {
+      writeFileSync(ruta, contenido.replace(/^RESEND_WEBHOOK_SECRET=\s*$/m, `RESEND_WEBHOOK_SECRET=${secreto}`))
+      console.log(`\n  Clave de firma guardada en ${ruta}`)
+    } else {
+      console.log(`\n  ${ruta} ya tenía RESEND_WEBHOOK_SECRET con valor: no se toca.`)
+      console.log(`  Clave nueva: ${secreto}`)
+    }
+  } else {
+    console.log(`\nRESEND_WEBHOOK_SECRET=${secreto}`)
+  }
+
+  console.log('\nCópiala también al entorno de Vercel y vuelve a desplegar.')
+  console.log('Sin esa variable el endpoint responde 503 y no procesa nada.\n')
 }
 
 main().catch((error) => {

@@ -217,9 +217,12 @@ Orden que funciona:
    ```
 
    Suscríbete solo a los eventos que el endpoint entiende: `email.delivered`, `email.opened`,
-   `email.clicked`, `email.bounced`, `email.complained` y `email.failed`.
-3. **Guarda la clave de firma** (`whsec_…`) en `RESEND_WEBHOOK_SECRET`, en el entorno de la app.
-   Sin ella el endpoint responde `503` y no procesa nada; con una firma que no cuadra, `401`.
+   `email.clicked`, `email.bounced`, `email.complained` y `email.failed`. El script guarda la clave
+   de firma en `.env.local` en lugar de dejarla en el scroll de la terminal.
+3. **Copia `RESEND_WEBHOOK_SECRET` al entorno de Vercel** y vuelve a desplegar. Sin esa variable el
+   endpoint responde `503` y no procesa nada; con una firma que no cuadra, `401`.
+
+Estado actual: webhook dado de alta contra `https://wake-up-beta.vercel.app/api/webhooks/resend`.
 
 **Hasta que no hagas un envío real, el webhook no tiene nada que hacer.** Los eventos se casan con
 el envío por `resend_id`, y ese campo solo se rellena cuando el email sale de verdad
