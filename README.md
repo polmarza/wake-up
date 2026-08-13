@@ -142,6 +142,51 @@ de prueba.
 
 ---
 
+## Despliegue
+
+El repositorio está en [github.com/polmarza/wake-up](https://github.com/polmarza/wake-up) y el
+despliegue es Vercel. Importa el repositorio desde el panel (Add New → Project) y añade las
+variables de entorno antes del primer despliegue.
+
+### Variables que hay que crear en Vercel
+
+Los valores son los mismos de tu `.env.local`, salvo los dos marcados:
+
+| Variable | Nota |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | |
+| `SUPABASE_SECRET_KEY` | Solo servidor |
+| `ANTHROPIC_API_KEY` | |
+| `ANTHROPIC_MODEL` | `claude-opus-5` |
+| `RESEND_API_KEY` | |
+| `RESEND_FROM` | |
+| `RESEND_WEBHOOK_SECRET` | Se rellena después de crear el webhook |
+| `ENVIO_REAL_HABILITADO` | `false` mientras no quieras que salga nada |
+| `EMAIL_OPERADOR` | |
+| `ALUMNO_REAL_EMAIL` | |
+| `EMAILS_PERMITIDOS` | |
+| `CRON_SECRET` | |
+| `NEXT_PUBLIC_APP_URL` | **Cambia**: la URL de producción, no `localhost` |
+
+`DATABASE_URL` no hace falta en Vercel: solo se usa para migraciones y seed desde tu máquina.
+
+### Dos cosas que rompen en producción si se olvidan
+
+1. **`NEXT_PUBLIC_APP_URL` apuntando a `localhost`.** Es la base del enlace de baja que va dentro de
+   cada email: si se queda en local, mandas a los alumnos un enlace que no lleva a ninguna parte.
+2. **Las URLs de redirección de Supabase.** En Authentication → URL Configuration hay que añadir la
+   URL de producción como *Site URL* y `https://…/auth/callback` a *Redirect URLs*. Sin eso el
+   enlace mágico de acceso falla en producción aunque funcione en local.
+
+### Cron
+
+`vercel.json` programa `/api/cron/preparar-cola` de lunes a viernes a las 7:00. En plan Hobby la
+expresión es válida —una ejecución al día— pero la hora es aproximada: Vercel documenta una
+precisión de ±59 minutos.
+
+---
+
 ## Webhook de Resend
 
 El webhook es lo que hace que un rebote o una queja de spam saquen al alumno de la cola sin que
