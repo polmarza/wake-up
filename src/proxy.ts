@@ -10,7 +10,7 @@ import { listaDeAcceso, correoPermitido } from '@/lib/config/acceso'
  * propia autenticación.
  */
 
-const RUTAS_PUBLICAS = ['/login', '/auth/callback', '/baja', '/api/cron', '/api/webhooks']
+const RUTAS_PUBLICAS = ['/login', '/auth/callback', '/auth/confirm', '/baja', '/api/cron', '/api/webhooks']
 
 export async function proxy(request: NextRequest) {
   const respuesta = NextResponse.next({ request })

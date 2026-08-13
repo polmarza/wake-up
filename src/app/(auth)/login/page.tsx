@@ -10,12 +10,16 @@ const MENSAJES: Record<string, string> = {
     'No hay ninguna dirección autorizada configurada (EMAILS_PERMITIDOS), así que no puede entrar ' +
     'nadie. Es un problema de configuración, no de tu cuenta.',
   'enlace-caducado': 'Ese enlace ya se usó o caducó. Pide uno nuevo.',
+  'enlace-invalido': 'Supabase no aceptó el enlace.',
   'sin-codigo': 'El enlace llegó incompleto. Pide uno nuevo.',
 }
 
 function Formulario() {
   const parametros = useSearchParams()
-  const avisoPrevio = MENSAJES[parametros.get('error') ?? '']
+  const detalle = parametros.get('detalle')
+  const base = MENSAJES[parametros.get('error') ?? '']
+  // El detalle viene del propio Supabase: es lo que distingue "caducado" de "ya usado".
+  const avisoPrevio = base && detalle ? `${base} ${detalle}.` : base
 
   const [correo, setCorreo] = useState('')
   const [estado, setEstado] = useState<'inicial' | 'enviando' | 'enviado' | 'error'>('inicial')

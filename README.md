@@ -124,6 +124,36 @@ pnpm test
 
 ---
 
+## Acceso al panel: por qué la plantilla del correo importa
+
+El acceso es por enlace mágico, y Supabase lo puede entregar de dos maneras. La diferencia no es
+cosmética:
+
+- **`{{ .ConfirmationURL }}`** (plantilla por defecto) usa el flujo PKCE: guarda un verificador **en
+  el navegador que pidió el enlace** y lo necesita para completar el canje. Si el correo abre el
+  enlace en otro navegador, en otro perfil, en la vista web de la aplicación de correo o tras
+  limpiar el almacenamiento, falla con `PKCE code verifier not found in storage` y no hay forma de
+  recuperarlo.
+- **`{{ .TokenHash }}`** hace el canje entero en el servidor. No depende de nada guardado antes, así
+  que el enlace funciona se abra donde se abra. Es lo que Supabase recomienda para aplicaciones con
+  servidor, y lo que usa este proyecto.
+
+En Supabase → Authentication → Email Templates → **Magic Link**, deja el cuerpo así:
+
+```html
+<h2>Wake Up Heroes</h2>
+<p>Entra al panel con este enlace:</p>
+<p><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=magiclink">Entrar</a></p>
+```
+
+Conviene hacer lo mismo en la plantilla **Confirm signup**, cambiando `type=magiclink` por
+`type=signup`: es la que se envía la primera vez que entra alguien cuya cuenta aún no existe.
+
+`/auth/callback` se mantiene para los enlaces del flujo antiguo, pero la ruta buena es
+`/auth/confirm`.
+
+---
+
 ## Si el enlace de acceso no llega
 
 El correo de acceso **no lo manda Resend**: lo manda Supabase Auth con su servicio de email
