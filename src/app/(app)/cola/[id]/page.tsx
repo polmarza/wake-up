@@ -176,7 +176,13 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
             </p>
           )}
 
+          {/*
+            La key incluye el contenido del borrador a propósito: al generar o
+            regenerar, React remonta el panel y las cajas se rellenan con el texto
+            nuevo. Sin ella, el componente conserva el estado del primer render.
+          */}
           <BorradorPanel
+            key={`${borrador?.id ?? 'sin-borrador'}:${borrador?.asunto ?? ''}:${borrador?.cuerpo?.length ?? 0}`}
             alumnoId={id}
             borrador={borrador}
             envioRealDisponible={envioRealDisponible}

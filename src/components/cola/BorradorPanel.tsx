@@ -12,6 +12,16 @@ import {
 
 type Borrador = { id: string; asunto: string | null; cuerpo: string | null; plantilla_id: string | null }
 
+/**
+ * El componente se **remonta** cuando cambia el borrador que llega del servidor: la
+ * página le pasa una `key` derivada de su contenido.
+ *
+ * Hace falta porque `useState` solo usa su valor inicial en el primer montaje. Sin
+ * eso, entrar en una ficha sin borrador dejaba las cajas vacías para siempre: al
+ * generar, el texto llegaba del servidor pero la pantalla seguía enseñando el vacío
+ * del primer render, y «Regenerar» parecía no hacer nada.
+ */
+
 export function BorradorPanel({
   alumnoId,
   borrador,
@@ -27,6 +37,7 @@ export function BorradorPanel({
   const [asunto, setAsunto] = useState(borrador?.asunto ?? '')
   const [cuerpo, setCuerpo] = useState(borrador?.cuerpo ?? '')
   const [editado, setEditado] = useState(false)
+
   const [aviso, setAviso] = useState<{ tipo: 'ok' | 'aviso' | 'error'; texto: string } | null>(null)
   const [instruccion, setInstruccion] = useState('')
 
@@ -49,7 +60,11 @@ export function BorradorPanel({
   }
 
   async function guardarSiHaceFalta() {
-    if (editado && borrador) await guardarEdicionAccion(borrador.id, asunto, cuerpo)
+    // Nunca se guarda vacío: si las cajas están en blanco es que algo salió mal en la
+    // pantalla, no que el operador quisiera borrar el email.
+    if (!editado || !borrador) return
+    if (!asunto.trim() || !cuerpo.trim()) return
+    await guardarEdicionAccion(borrador.id, asunto, cuerpo)
   }
 
   if (!borrador) {
