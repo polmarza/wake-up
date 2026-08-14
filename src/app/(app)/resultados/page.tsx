@@ -37,65 +37,88 @@ export default async function Resultados() {
 
   const maxTasaSegmento = Math.max(...porSegmento.map((fila) => fila.tasa), 0.01)
   const maxTasaPlantilla = Math.max(...porPlantilla.map((fila) => fila.tasaObservada), 0.01)
+  // La de mayor tasa esperada, que es por donde el bandit tira más a menudo.
+  const mejorPlantilla = [...porPlantilla].sort((a, b) => b.tasaEsperada - a.tasaEsperada)[0]
 
   return (
-    <main className="mx-auto max-w-[1440px] px-8 py-10">
-      <header>
-        <div>
-          <h1 className="font-display text-[32px] font-bold">Resultados</h1>
-          <p className="mt-1 text-sm text-texto-suave">
-            La pregunta que importa no es cuántos volvieron, sino cuántos no habrían vuelto solos.
-          </p>
-        </div>
-      </header>
+    <main className="mx-auto max-w-[1440px] px-8 py-8">
+      {/* ── El uplift, que es la única cifra que demuestra causalidad ───────── */}
+      <section className="rounded-[10px] border border-borde bg-superficie p-6">
+        <h1 className="font-display text-[32px] leading-none font-bold">Resultados</h1>
+        <p className="mt-2 max-w-2xl text-sm text-texto-suave">
+          La pregunta no es cuántos volvieron, sino cuántos <strong>no habrían vuelto solos</strong>.
+          Por eso hay un grupo de control que no recibe nada.
+        </p>
 
-      {/* ── Uplift ─────────────────────────────────────────────────────────── */}
-      <section className="mt-8 rounded-[10px] border border-borde">
-        <div className="grid gap-px bg-borde sm:grid-cols-3">
-          <div className="bg-white p-6">
-            <div className="text-xs tracking-wide text-texto-suave uppercase">Tratamiento (contactados)</div>
-            <div className="mt-2 font-display text-[40px] leading-none font-bold tabular">
-              {porcentaje(uplift.tratamiento.tasa)}
-            </div>
-            <div className="mt-2 text-[13px] text-texto-suave tabular">
-              {uplift.tratamiento.reactivados} de {uplift.tratamiento.alumnos} alumnos
-            </div>
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto]">
+          {/* Dos barras a la misma escala: la comparación se ve, no se calcula. */}
+          <div className="space-y-5">
+            {[
+              {
+                etiqueta: 'Recibieron email',
+                grupo: uplift.tratamiento,
+                color: '#ff2878',
+              },
+              {
+                etiqueta: 'Grupo de control',
+                grupo: uplift.holdout,
+                color: '#3b82c4',
+              },
+            ].map((fila) => (
+              <div key={fila.etiqueta}>
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="text-[13px] font-medium">{fila.etiqueta}</span>
+                  <span className="text-[12px] text-texto-suave tabular">
+                    {fila.grupo.reactivados} de {fila.grupo.alumnos} volvieron
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="h-7 flex-1 overflow-hidden rounded-[6px] bg-white">
+                    <div
+                      className="flex h-full items-center justify-end rounded-[6px] px-2"
+                      style={{
+                        width: `${Math.max(fila.grupo.tasa * 100 * 2.5, 2)}%`,
+                        backgroundColor: fila.color,
+                      }}
+                    />
+                  </div>
+                  <span
+                    className="w-[62px] text-right font-display text-[20px] font-bold tabular"
+                    style={{ color: fila.color }}
+                  >
+                    {porcentaje(fila.grupo.tasa)}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="bg-white p-6">
-            <div className="text-xs tracking-wide text-texto-suave uppercase">Holdout (nunca reciben nada)</div>
-            <div className="mt-2 font-display text-[40px] leading-none font-bold tabular text-info">
-              {porcentaje(uplift.holdout.tasa)}
-            </div>
-            <div className="mt-2 text-[13px] text-texto-suave tabular">
-              {uplift.holdout.reactivados} de {uplift.holdout.alumnos} alumnos
-            </div>
-          </div>
-
-          <div className="bg-white p-6">
-            <div className="text-xs tracking-wide text-texto-suave uppercase">Uplift</div>
-            <div className="mt-2 font-display text-[40px] leading-none font-bold tabular text-rosa">
+          <div className="flex flex-col justify-center rounded-[10px] border border-borde bg-white px-8 py-6 text-center">
+            <div className="font-display text-[56px] leading-none font-bold text-rosa tabular">
               {uplift.diferenciaPuntos > 0 ? '+' : ''}
-              {uplift.diferenciaPuntos.toFixed(1)} pp
+              {uplift.diferenciaPuntos.toFixed(1)}
             </div>
-            <div className="mt-2 text-[13px] text-texto-suave">Diferencia en puntos porcentuales</div>
+            <div className="mt-2 text-xs tracking-wide text-texto-suave uppercase">
+              puntos de uplift
+            </div>
           </div>
         </div>
 
         {uplift.holdoutSinReactivaciones && (
-          <div className="border-t border-borde bg-aviso/5 px-6 py-4">
+          <div className="mt-6 rounded-[10px] border border-aviso/30 bg-aviso/5 px-5 py-4">
             <p className="text-[13px] font-medium text-aviso">
               Este uplift no es creíble, y conviene decirlo antes de que lo diga otro.
             </p>
             <p className="mt-2 text-[13px] text-texto-suave">
-              El holdout registra <strong>cero</strong> reactivaciones sobre {uplift.holdout.alumnos}{' '}
-              alumnos. En datos reales eso no pasa nunca: siempre hay gente que vuelve sola, y ese
-              suelo es justo lo que el grupo de control existe para medir. Aquí es un artefacto del
-              dataset sintético, que solo marca como reactivado a quien recibió un email.
+              El grupo de control registra <strong>cero</strong> reactivaciones sobre{' '}
+              {uplift.holdout.alumnos} alumnos. En datos reales eso no pasa nunca: siempre hay gente
+              que vuelve sola, y ese suelo es justo lo que el control existe para medir. Aquí es un
+              artefacto del dataset sintético, que solo marca como reactivado a quien recibió un
+              email.
             </p>
             <p className="mt-2 text-[13px] text-texto-suave">
               Lo que esta pantalla demuestra es que <strong>la medición está montada</strong>: hay
-              grupo de control, se compara contra él y el número saldría igual de rojo si el sistema
+              grupo de control, se compara contra él, y el número saldría igual de rojo si el sistema
               no funcionara. La magnitud necesita datos reales.
             </p>
           </div>
@@ -187,8 +210,25 @@ export default async function Resultados() {
             </thead>
             <tbody>
               {porPlantilla.map((fila) => (
-                <tr key={fila.id} className="h-12 border-b border-borde last:border-0">
-                  <td className="px-4 font-mono text-[12px]">{fila.id}</td>
+                <tr
+                  key={fila.id}
+                  className={`h-12 border-b border-borde last:border-0 ${
+                    fila.id === mejorPlantilla?.id ? 'bg-exito/5' : ''
+                  }`}
+                >
+                  <td className="px-4 font-mono text-[12px]">
+                    {fila.id}
+                    {fila.id === mejorPlantilla?.id && (
+                      <span className="ml-2 rounded-full bg-exito/15 px-2 py-0.5 font-sans text-[11px] font-medium text-exito">
+                        va ganando
+                      </span>
+                    )}
+                    {fila.envios >= 20 && fila.reactivaciones === 0 && (
+                      <span className="ml-2 rounded-full bg-error/10 px-2 py-0.5 font-sans text-[11px] font-medium text-error">
+                        apagándose
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 text-texto-suave">{fila.tono}</td>
                   <td className="px-4 tabular">{fila.envios}</td>
                   <td className="px-4 tabular">{fila.reactivaciones}</td>

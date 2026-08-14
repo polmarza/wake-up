@@ -61,6 +61,25 @@ describe('puedeEnviarDeVerdad', () => {
     expect(puedeEnviarDeVerdad('operador@ejemplo.com')).toBe(false)
   })
 
+  it('acepta un dominio entero en la lista de destinatarios reales', async () => {
+    const { puedeEnviarDeVerdad } = await cargar({
+      EMAIL_OPERADOR: 'operador@ejemplo.com',
+      ALUMNO_REAL_EMAIL: '@learningheroes.com',
+    })
+    expect(puedeEnviarDeVerdad('quien.sea@learningheroes.com')).toBe(true)
+    expect(puedeEnviarDeVerdad('otra@learningheroes.com')).toBe(true)
+  })
+
+  it('un dominio permitido no abre la puerta a las direcciones del dataset', async () => {
+    const { puedeEnviarDeVerdad } = await cargar({
+      EMAIL_OPERADOR: undefined,
+      ALUMNO_REAL_EMAIL: '@learningheroes.com',
+    })
+    expect(puedeEnviarDeVerdad('laura.aranda@example.com')).toBe(false)
+    // Ni a un dominio que solo se le parece.
+    expect(puedeEnviarDeVerdad('intruso@falsolearningheroes.com')).toBe(false)
+  })
+
   it('bloquea todo si no hay ninguna dirección permitida configurada', async () => {
     const { puedeEnviarDeVerdad } = await cargar({
       EMAIL_OPERADOR: undefined,

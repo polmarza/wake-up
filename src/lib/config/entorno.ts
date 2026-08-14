@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { listaDeAcceso } from './acceso'
+import { listaDeAcceso, correoPermitido } from './acceso'
 
 /**
  * Configuración validada al arrancar. Si falta algo o está mal escrito, el proceso
@@ -39,14 +39,21 @@ const esquemaServidor = z.object({
     .default('false')
     .transform((valor) => valor === 'true'),
 
-  /** Buzón del operador. Puede recibir envíos reales. */
-  EMAIL_OPERADOR: opcional(z.string().email()),
+  /**
+   * Buzón del operador. Puede recibir envíos reales.
+   *
+   * Admite los mismos formatos que EMAILS_PERMITIDOS: una dirección concreta o un
+   * dominio entero (`@learningheroes.com`). Ojo con la diferencia: en la lista de
+   * acceso, un dominio decide *quién entra*; aquí decide *a quién se le puede
+   * escribir*, y un error se materializa en la bandeja de otra persona.
+   */
+  EMAIL_OPERADOR: opcional(z.string().min(1)),
 
   /**
    * Correo del alumno real que añade el seed. También puede recibir envíos reales:
-   * si no, no se podría ver en la demo el email que se le escribe.
+   * si no, no se podría ver en la demo el email que se le escribe. Mismo formato.
    */
-  ALUMNO_REAL_EMAIL: opcional(z.string().email()),
+  ALUMNO_REAL_EMAIL: opcional(z.string().min(1)),
 
   /** Quién puede entrar: direcciones sueltas o dominios enteros (@learningheroes.com). */
   EMAILS_PERMITIDOS: z.string().default('').transform(listaDeAcceso),
@@ -83,11 +90,7 @@ export function destinatariosRealesPermitidos(): string[] {
   const env = entorno()
   // Se deduplica porque lo habitual es que las dos variables apunten al mismo buzón,
   // y una lista que repite la misma dirección dos veces parece un error de datos.
-  return [...new Set(
-    [env.EMAIL_OPERADOR, env.ALUMNO_REAL_EMAIL]
-      .filter((correo): correo is string => Boolean(correo))
-      .map((correo) => correo.trim().toLowerCase()),
-  )]
+  return [...new Set([...listaDeAcceso(env.EMAIL_OPERADOR), ...listaDeAcceso(env.ALUMNO_REAL_EMAIL)])]
 }
 
 /**
@@ -102,8 +105,7 @@ export function puedeEnviarDeVerdad(destinatario: string): boolean {
   if (!env.ENVIO_REAL_HABILITADO) return false
   if (!env.RESEND_API_KEY || !env.RESEND_FROM) return false
 
-  const permitidos = destinatariosRealesPermitidos()
-  if (permitidos.length === 0) return false
-
-  return permitidos.includes(destinatario.trim().toLowerCase())
+  // Misma comprobación que la lista de acceso: admite direcciones y dominios, y
+  // deniega si no hay ninguna configurada.
+  return correoPermitido(destinatario, destinatariosRealesPermitidos())
 }
