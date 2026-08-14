@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { bandejaDeResultados } from '@/lib/alumnos/consultas'
 import { ETIQUETAS_SEGMENTO, type Segmento } from '@/lib/candidatos/consultas'
 import { BotonesResultado } from '@/components/seguimiento/BotonesResultado'
@@ -16,7 +15,7 @@ export default async function Seguimiento() {
 
   return (
     <main className="mx-auto max-w-[1440px] px-8 py-10">
-      <header className="flex items-start justify-between gap-6">
+      <header>
         <div>
           <h1 className="font-display text-[32px] font-bold">Seguimiento</h1>
           <p className="mt-1 text-sm text-texto-suave">
@@ -25,12 +24,6 @@ export default async function Seguimiento() {
             plantilla que se usó.
           </p>
         </div>
-        <Link
-          href="/resultados"
-          className="shrink-0 rounded-[6px] border border-borde px-3 py-2 text-sm text-texto-suave hover:bg-superficie"
-        >
-          Resultados →
-        </Link>
       </header>
 
       <section className="mt-8 flex flex-wrap gap-3">

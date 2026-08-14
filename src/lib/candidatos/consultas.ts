@@ -106,6 +106,20 @@ export async function historialDeEnvios(alumnoId: string): Promise<EnvioHistoric
   return (data ?? []) as unknown as EnvioHistorico[]
 }
 
+/** Qué alumnos ya tienen un borrador esperando. Es el trabajo que el cron dejó hecho. */
+export async function alumnosConBorrador(): Promise<Set<string>> {
+  const supabase = await clienteServidor()
+
+  const { data, error } = await supabase
+    .from('envios')
+    .select('alumno_id')
+    .eq('estado_envio', 'borrador')
+
+  if (error) throw new Error(`No se pudieron leer los borradores: ${error.message}`)
+
+  return new Set((data ?? []).map((fila) => fila.alumno_id as string))
+}
+
 /** El borrador pendiente de este alumno, si lo hay. Solo puede haber uno. */
 export async function borradorPendiente(alumnoId: string): Promise<EnvioHistorico | null> {
   const envios = await historialDeEnvios(alumnoId)

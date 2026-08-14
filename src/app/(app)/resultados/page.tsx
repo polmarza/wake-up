@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { obtenerResultados } from '@/lib/resultados/consultas'
 import { ETIQUETAS_SEGMENTO, type Segmento } from '@/lib/candidatos/consultas'
 
@@ -41,26 +40,12 @@ export default async function Resultados() {
 
   return (
     <main className="mx-auto max-w-[1440px] px-8 py-10">
-      <header className="flex items-baseline justify-between">
+      <header>
         <div>
           <h1 className="font-display text-[32px] font-bold">Resultados</h1>
           <p className="mt-1 text-sm text-texto-suave">
             La pregunta que importa no es cuántos volvieron, sino cuántos no habrían vuelto solos.
           </p>
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <Link
-            href="/seguimiento"
-            className="rounded-[6px] border border-borde px-3 py-2 text-sm text-texto-suave hover:bg-superficie"
-          >
-            Seguimiento
-          </Link>
-          <Link
-            href="/cola"
-            className="rounded-[6px] border border-borde px-3 py-2 text-sm text-texto-suave hover:bg-superficie"
-          >
-            Cola →
-          </Link>
         </div>
       </header>
 
