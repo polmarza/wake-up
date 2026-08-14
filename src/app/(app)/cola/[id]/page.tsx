@@ -55,26 +55,13 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
     ? plantillas.find((plantilla) => plantilla.id === borrador.plantilla_id)
     : null
 
-  const env = entorno()
-  const permitidos = destinatariosRealesPermitidos()
-  const buzonReal = permitidos.includes(candidato.email.toLowerCase())
-  const envioRealDisponible = env.ENVIO_REAL_HABILITADO && buzonReal
-
   /**
-   * Por qué no se puede enviar de verdad, dicho antes de pulsar nada. Un botón que
-   * falla al hacer clic obliga a adivinar; esto se lee y se arregla.
+   * Por qué no se puede enviar de verdad, dicho antes de pulsar nada y con el motivo
+   * exacto. La comprobación es **la misma** que usa el envío: si la pantalla mira una
+   * cosa y el envío otra, la pantalla acaba prometiendo algo que no ocurre.
    */
-  const motivoSinEnvioReal = envioRealDisponible
-    ? null
-    : !buzonReal
-      ? permitidos.length === 0
-        ? 'No hay ninguna dirección autorizada para envíos reales: falta EMAIL_OPERADOR (o ' +
-          'ALUMNO_REAL_EMAIL) en el entorno.'
-        : `${candidato.email} no está entre las direcciones autorizadas para envíos reales ` +
-          `(${permitidos.join(', ')}). Si es un buzón tuyo de verdad, añádelo a ALUMNO_REAL_EMAIL; ` +
-          'si es del dataset sintético, no existe y no debe recibir nada.'
-      : 'El interruptor ENVIO_REAL_HABILITADO está en false. Ponlo a true en Vercel y vuelve a ' +
-        'desplegar para que este email salga de verdad.'
+  const motivoSinEnvioReal = motivoNoEnviable(candidato.email)
+  const envioRealDisponible = motivoSinEnvioReal === null
 
   return (
     <main className="mx-auto max-w-[1440px] px-8 py-10">
