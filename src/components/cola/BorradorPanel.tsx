@@ -27,15 +27,20 @@ export function BorradorPanel({
   const [asunto, setAsunto] = useState(borrador?.asunto ?? '')
   const [cuerpo, setCuerpo] = useState(borrador?.cuerpo ?? '')
   const [editado, setEditado] = useState(false)
-  const [aviso, setAviso] = useState<{ tipo: 'ok' | 'error'; texto: string } | null>(null)
+  const [aviso, setAviso] = useState<{ tipo: 'ok' | 'aviso' | 'error'; texto: string } | null>(null)
   const [instruccion, setInstruccion] = useState('')
 
-  function ejecutar(accion: () => Promise<{ ok: boolean; mensaje?: string; error?: string }>) {
+  function ejecutar(
+    accion: () => Promise<{ ok: boolean; mensaje?: string; aviso?: string; error?: string }>,
+  ) {
     setAviso(null)
     iniciar(async () => {
       const resultado = await accion()
       if (resultado.ok) {
-        if (resultado.mensaje) setAviso({ tipo: 'ok', texto: resultado.mensaje })
+        // Un "se registró pero no salió" no es un éxito, y pintarlo de verde fue
+        // exactamente lo que hizo creer que un email había llegado cuando no.
+        if (resultado.aviso) setAviso({ tipo: 'aviso', texto: resultado.aviso })
+        else if (resultado.mensaje) setAviso({ tipo: 'ok', texto: resultado.mensaje })
         router.refresh()
       } else {
         setAviso({ tipo: 'error', texto: resultado.error ?? 'Error desconocido' })
@@ -110,8 +115,12 @@ export function BorradorPanel({
 
       {aviso && (
         <p
-          className={`rounded-[6px] px-3 py-2 text-sm ${
-            aviso.tipo === 'error' ? 'bg-error/10 text-error' : 'bg-exito/10 text-exito'
+          className={`rounded-[6px] px-3 py-2 text-sm font-medium ${
+            aviso.tipo === 'error'
+              ? 'bg-error/10 text-error'
+              : aviso.tipo === 'aviso'
+                ? 'bg-aviso/10 text-aviso'
+                : 'bg-exito/10 text-exito'
           }`}
         >
           {aviso.texto}

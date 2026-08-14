@@ -94,18 +94,44 @@ export function destinatariosRealesPermitidos(): string[] {
 }
 
 /**
- * Un envío real solo puede salir si el interruptor está activo, hay clave de Resend y
- * el destinatario está en esa lista corta.
+ * Por qué este email no puede salir de verdad, o `null` si sí puede.
  *
+ * Devuelve el motivo en vez de un booleano a propósito: con un `false` a secas, quien
+ * lo consume tiene que adivinar la causa, y adivinar acaba en mensajes que culpan a
+ * la dirección cuando lo que falta es una credencial. Cada motivo se arregla de una
+ * forma distinta, así que cada motivo se dice.
+ */
+export function motivoNoEnviable(destinatario: string): string | null {
+  const env = entorno()
+
+  if (!env.ENVIO_REAL_HABILITADO) {
+    return 'El interruptor ENVIO_REAL_HABILITADO está en false'
+  }
+
+  if (!env.RESEND_API_KEY || !env.RESEND_FROM) {
+    const faltan = [
+      !env.RESEND_API_KEY ? 'RESEND_API_KEY' : null,
+      !env.RESEND_FROM ? 'RESEND_FROM' : null,
+    ].filter(Boolean)
+    return `Falta ${faltan.join(' y ')} en el entorno de la aplicación`
+  }
+
+  const permitidos = destinatariosRealesPermitidos()
+  if (permitidos.length === 0) {
+    return 'No hay ninguna dirección autorizada: falta EMAIL_OPERADOR o ALUMNO_REAL_EMAIL'
+  }
+
+  if (!correoPermitido(destinatario, permitidos)) {
+    return `${destinatario} no está autorizada para envíos reales (${permitidos.join(', ')})`
+  }
+
+  return null
+}
+
+/**
  * Las direcciones del dataset son @example.com y no son entregables: dejarlas pasar
  * generaría rebotes y ensuciaría la reputación del dominio.
  */
 export function puedeEnviarDeVerdad(destinatario: string): boolean {
-  const env = entorno()
-  if (!env.ENVIO_REAL_HABILITADO) return false
-  if (!env.RESEND_API_KEY || !env.RESEND_FROM) return false
-
-  // Misma comprobación que la lista de acceso: admite direcciones y dominios, y
-  // deniega si no hay ninguna configurada.
-  return correoPermitido(destinatario, destinatariosRealesPermitidos())
+  return motivoNoEnviable(destinatario) === null
 }

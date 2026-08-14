@@ -14,7 +14,9 @@ import { enviarEmail } from '@/lib/email/enviar'
  * la interfaz y la aprobación revalida la elegibilidad en la misma transacción.
  */
 
-export type Respuesta = { ok: true; mensaje?: string } | { ok: false; error: string }
+export type Respuesta =
+  | { ok: true; mensaje?: string; aviso?: string }
+  | { ok: false; error: string }
 
 export async function generarBorradorAccion(
   alumnoId: string,
@@ -132,7 +134,15 @@ export async function aprobarAccion(
         mensaje = 'Enviado de verdad y registrado'
       } else {
         await supabase.from('envios').update({ envio_real: false }).eq('id', envioId)
-        mensaje = `Registrado, pero no salió: ${resultado.motivo}`
+        // Se devuelve como aviso, no como mensaje de éxito: el envío quedó
+        // registrado —con sus efectos— pero el email no salió, y esas dos cosas no
+        // se pueden contar con el mismo color.
+        revalidatePath('/cola')
+        revalidatePath(`/cola/${alumnoId}`)
+        return {
+          ok: true,
+          aviso: `Registrado en el historial, pero el email NO salió: ${resultado.motivo}`,
+        }
       }
     }
   }

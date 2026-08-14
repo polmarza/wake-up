@@ -1,6 +1,6 @@
 import 'server-only'
 import { Resend } from 'resend'
-import { entorno, puedeEnviarDeVerdad, destinatariosRealesPermitidos } from '@/lib/config/entorno'
+import { entorno, motivoNoEnviable } from '@/lib/config/entorno'
 import { renderHtml, renderTexto } from './render'
 
 /**
@@ -21,31 +21,14 @@ export async function enviarEmail(parametros: {
   cuerpo: string
   bajaToken: string
 }): Promise<ResultadoEnvio> {
+  const impedimento = motivoNoEnviable(parametros.destinatario)
+  if (impedimento) return { enviado: false, motivo: impedimento }
+
   const env = entorno()
-
-  if (!env.ENVIO_REAL_HABILITADO) {
-    return { enviado: false, motivo: 'El envío real está desactivado (ENVIO_REAL_HABILITADO=false)' }
-  }
-
-  if (!puedeEnviarDeVerdad(parametros.destinatario)) {
-    const permitidos = destinatariosRealesPermitidos()
-    return {
-      enviado: false,
-      motivo:
-        permitidos.length === 0
-          ? 'No hay ninguna dirección autorizada para envíos reales'
-          : `Solo se puede enviar de verdad a ${permitidos.join(' o ')}, nunca a una dirección del dataset`,
-    }
-  }
-
-  if (!env.RESEND_API_KEY || !env.RESEND_FROM) {
-    return { enviado: false, motivo: 'Faltan RESEND_API_KEY o RESEND_FROM' }
-  }
-
-  const resend = new Resend(env.RESEND_API_KEY)
+  const resend = new Resend(env.RESEND_API_KEY!)
 
   const { data, error } = await resend.emails.send({
-    from: env.RESEND_FROM,
+    from: env.RESEND_FROM!,
     to: parametros.destinatario,
     subject: parametros.asunto,
     html: renderHtml(parametros.cuerpo, parametros.bajaToken),

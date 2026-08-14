@@ -10,7 +10,7 @@ import {
 } from '@/lib/candidatos/consultas'
 import { plantillasDeSegmento } from '@/lib/plantillas/consultas'
 import { tasaEsperada } from '@/lib/bandit/thompson'
-import { entorno, destinatariosRealesPermitidos } from '@/lib/config/entorno'
+import { motivoNoEnviable } from '@/lib/config/entorno'
 import { BorradorPanel } from '@/components/cola/BorradorPanel'
 
 export const dynamic = 'force-dynamic'
