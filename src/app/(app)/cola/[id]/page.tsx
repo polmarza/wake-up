@@ -57,8 +57,20 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
 
   const env = entorno()
   const permitidos = destinatariosRealesPermitidos()
-  const envioRealDisponible =
-    env.ENVIO_REAL_HABILITADO && permitidos.includes(candidato.email.toLowerCase())
+  const buzonReal = permitidos.includes(candidato.email.toLowerCase())
+  const envioRealDisponible = env.ENVIO_REAL_HABILITADO && buzonReal
+
+  /**
+   * Por qué no se puede enviar de verdad, dicho antes de pulsar nada. Un botón que
+   * falla al hacer clic obliga a adivinar; esto se lee y se arregla.
+   */
+  const motivoSinEnvioReal = envioRealDisponible
+    ? null
+    : !buzonReal
+      ? `${candidato.email} es una dirección del dataset sintético y no existe. Solo pueden recibir ` +
+        `correo de verdad ${permitidos.join(' y ') || '(ninguna configurada)'}.`
+      : 'El interruptor ENVIO_REAL_HABILITADO está en false. Ponlo a true en Vercel y vuelve a ' +
+        'desplegar para que este email salga de verdad.'
 
   return (
     <main className="mx-auto max-w-[1440px] px-8 py-10">
@@ -157,12 +169,21 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-lg font-semibold">Borrador</h2>
-            <span className="text-[12px] text-texto-tenue">
-              {envioRealDisponible
-                ? 'El envío real está activo para esta dirección'
-                : 'Envío simulado: se registra, pero no sale'}
+            <span
+              className={`rounded-full px-2.5 py-1 text-[12px] font-medium ${
+                envioRealDisponible ? 'bg-rosa/10 text-rosa' : 'bg-superficie text-texto-suave'
+              }`}
+            >
+              {envioRealDisponible ? 'Este sí llega a un buzón real' : 'Envío simulado'}
             </span>
           </div>
+
+          {motivoSinEnvioReal && (
+            <p className="mb-4 rounded-[10px] border border-borde bg-superficie px-4 py-3 text-[13px] text-texto-suave">
+              {motivoSinEnvioReal} El envío se registrará igualmente en el historial, con todos sus
+              efectos: consume intento y activa el enfriamiento de 14 días.
+            </p>
+          )}
 
           <BorradorPanel
             alumnoId={id}

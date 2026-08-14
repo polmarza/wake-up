@@ -141,8 +141,9 @@ export function BorradorPanel({
           }
           disabled={pendiente}
           className="rounded-[6px] border border-borde px-4 py-2 text-sm disabled:opacity-60"
+          title="Manda este mismo email a tu dirección, sin registrarlo ni consumir intento"
         >
-          Probar en mi buzón
+          Enviármelo a mí
         </button>
 
         <button

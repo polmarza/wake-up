@@ -7,6 +7,7 @@ import {
   TECHO_INTENTOS,
   type Segmento,
 } from '@/lib/candidatos/consultas'
+import { entorno, destinatariosRealesPermitidos } from '@/lib/config/entorno'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +38,11 @@ function Badge({ segmento }: { segmento: Segmento }) {
 export default async function Cola() {
   const candidatos = await obtenerCandidatos()
   const reparto = repartoPorSegmento(candidatos)
+
+  // Las únicas direcciones a las que este sistema puede escribir de verdad. El resto
+  // del dataset es @example.com y no existe.
+  const conBuzonReal = new Set(destinatariosRealesPermitidos())
+  const envioRealActivo = entorno().ENVIO_REAL_HABILITADO
 
   return (
     <main className="mx-auto max-w-[1440px] px-8 py-10">
@@ -106,8 +112,15 @@ export default async function Cola() {
                 >
                   <td className="px-3">
                     <Link href={`/cola/${candidato.id}`} className="block">
-                      <div className="font-medium underline-offset-2 hover:underline">
-                        {candidato.nombre} {candidato.apellidos}
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium underline-offset-2 hover:underline">
+                          {candidato.nombre} {candidato.apellidos}
+                        </span>
+                        {conBuzonReal.has(candidato.email.toLowerCase()) && (
+                          <span className="rounded-full bg-rosa/10 px-2 py-0.5 text-[11px] font-medium text-rosa">
+                            buzón real
+                          </span>
+                        )}
                       </div>
                       <div className="text-[12px] text-texto-tenue">{candidato.email}</div>
                     </Link>
@@ -136,10 +149,18 @@ export default async function Cola() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-texto-tenue">
-        Ordenados por prioridad: primero quien se fue hace menos tiempo y más lejos había llegado.
-        Selecciona un alumno para ver su ficha y revisar el borrador.
-      </p>
+      <div className="mt-6 space-y-1 text-xs text-texto-tenue">
+        <p>
+          Ordenados por prioridad: primero quien se fue hace menos tiempo y más lejos había llegado.
+          Selecciona un alumno para ver su ficha y revisar el borrador.
+        </p>
+        <p>
+          Los correos del dataset son <span className="font-mono">@example.com</span> y no existen.
+          Solo las filas marcadas como <span className="font-medium text-rosa">buzón real</span>{' '}
+          pueden recibir un email de verdad
+          {envioRealActivo ? '.' : ', y ahora mismo el envío real está desactivado.'}
+        </p>
+      </div>
     </main>
   )
 }
