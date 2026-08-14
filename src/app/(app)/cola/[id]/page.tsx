@@ -67,8 +67,12 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
   const motivoSinEnvioReal = envioRealDisponible
     ? null
     : !buzonReal
-      ? `${candidato.email} es una dirección del dataset sintético y no existe. Solo pueden recibir ` +
-        `correo de verdad ${permitidos.join(' y ') || '(ninguna configurada)'}.`
+      ? permitidos.length === 0
+        ? 'No hay ninguna dirección autorizada para envíos reales: falta EMAIL_OPERADOR (o ' +
+          'ALUMNO_REAL_EMAIL) en el entorno.'
+        : `${candidato.email} no está entre las direcciones autorizadas para envíos reales ` +
+          `(${permitidos.join(', ')}). Si es un buzón tuyo de verdad, añádelo a ALUMNO_REAL_EMAIL; ` +
+          'si es del dataset sintético, no existe y no debe recibir nada.'
       : 'El interruptor ENVIO_REAL_HABILITADO está en false. Ponlo a true en Vercel y vuelve a ' +
         'desplegar para que este email salga de verdad.'
 

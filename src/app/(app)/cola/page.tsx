@@ -102,6 +102,7 @@ export default async function Cola() {
                 <th className="px-3 py-3 font-medium">Inactivo</th>
                 <th className="px-3 py-3 font-medium">Motivo declarado</th>
                 <th className="px-3 py-3 font-medium">Intentos</th>
+                <th className="px-3 py-3 font-medium"></th>
               </tr>
             </thead>
             <tbody>
@@ -141,6 +142,14 @@ export default async function Cola() {
                   </td>
                   <td className="px-3 tabular">
                     {candidato.emails_enviados_total} de {TECHO_INTENTOS}
+                  </td>
+                  <td className="px-3 text-right">
+                    <Link
+                      href={`/cola/${candidato.id}`}
+                      className="rounded-[6px] border border-borde px-2.5 py-1 text-[12px] whitespace-nowrap hover:bg-white"
+                    >
+                      Revisar →
+                    </Link>
                   </td>
                 </tr>
               ))}

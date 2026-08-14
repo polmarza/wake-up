@@ -103,7 +103,7 @@ export function BorradorPanel({
             setCuerpo(evento.target.value)
             setEditado(true)
           }}
-          rows={14}
+          rows={10}
           className="w-full resize-y px-4 py-3 font-sans text-[15px] leading-relaxed outline-none"
         />
       </div>
@@ -118,7 +118,12 @@ export function BorradorPanel({
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
+      {/*
+        Fija abajo a propósito. El cuerpo del email es largo y, si los botones van
+        después, quedan fuera de pantalla: la acción principal de la herramienta
+        desaparece justo cuando hace falta.
+      */}
+      <div className="sticky bottom-0 -mx-1 flex flex-wrap items-center gap-2 border-t border-borde bg-white/95 px-1 py-3 backdrop-blur">
         <button
           onClick={() =>
             ejecutar(async () => {
@@ -132,19 +137,21 @@ export function BorradorPanel({
           {envioRealDisponible ? 'Aprobar y enviar de verdad' : 'Aprobar y registrar'}
         </button>
 
-        <button
-          onClick={() =>
-            ejecutar(async () => {
-              await guardarSiHaceFalta()
-              return probarEnMiBuzonAccion(borrador.id)
-            })
-          }
-          disabled={pendiente}
-          className="rounded-[6px] border border-borde px-4 py-2 text-sm disabled:opacity-60"
-          title="Manda este mismo email a tu dirección, sin registrarlo ni consumir intento"
-        >
-          Enviármelo a mí
-        </button>
+        {envioRealDisponible && (
+          <button
+            onClick={() =>
+              ejecutar(async () => {
+                await guardarSiHaceFalta()
+                return probarEnMiBuzonAccion(borrador.id)
+              })
+            }
+            disabled={pendiente}
+            className="rounded-[6px] border border-rosa px-4 py-2 text-sm font-medium text-rosa disabled:opacity-60"
+            title="Manda este mismo email a tu buzón, sin registrarlo ni consumir intento"
+          >
+            Enviármelo a mí
+          </button>
+        )}
 
         <button
           onClick={() => ejecutar(() => generarBorradorAccion(alumnoId, instruccion || undefined))}

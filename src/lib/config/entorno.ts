@@ -81,9 +81,13 @@ export function entorno(): Entorno {
  */
 export function destinatariosRealesPermitidos(): string[] {
   const env = entorno()
-  return [env.EMAIL_OPERADOR, env.ALUMNO_REAL_EMAIL]
-    .filter((correo): correo is string => Boolean(correo))
-    .map((correo) => correo.toLowerCase())
+  // Se deduplica porque lo habitual es que las dos variables apunten al mismo buzón,
+  // y una lista que repite la misma dirección dos veces parece un error de datos.
+  return [...new Set(
+    [env.EMAIL_OPERADOR, env.ALUMNO_REAL_EMAIL]
+      .filter((correo): correo is string => Boolean(correo))
+      .map((correo) => correo.trim().toLowerCase()),
+  )]
 }
 
 /**
