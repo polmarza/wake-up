@@ -5,8 +5,10 @@
  *   pnpm tsx scripts/anadir-alumnos-demo.ts ana@learningheroes.com juan@learningheroes.com
  *
  * Cada uno recibe un perfil distinto —segmento, curso, sesión donde lo dejó, motivo—
- * para que la cola enseñe variedad en vez de cuatro filas clonadas. Los ids son
- * deterministas, así que reejecutarlo actualiza en vez de duplicar.
+ * para que la cola enseñe variedad en vez de cuatro filas clonadas.
+ *
+ * La identidad es el **correo**, no la posición en la lista: reejecutarlo con otro
+ * orden actualiza a cada persona, en vez de escribir el perfil de una encima de otra.
  *
  * Para que además puedan recibir correo de verdad, su dirección tiene que estar
  * autorizada en EMAIL_OPERADOR o ALUMNO_REAL_EMAIL (admiten dominios enteros).
@@ -102,8 +104,6 @@ async function main() {
     const perfil = PERFILES[indice % PERFILES.length]
 
     return {
-      // Id determinista: reejecutar actualiza en vez de duplicar.
-      id: `00000000-0000-4000-8000-${String(indice + 10).padStart(12, '0')}`,
       nombre,
       apellidos: '(equipo)',
       email,
@@ -136,7 +136,9 @@ async function main() {
     }
   })
 
-  const { error } = await db.from('alumnos').upsert(filas, { onConflict: 'id' })
+  // Conflicto por email: quien ya exista se actualiza, y de paso se le reinician los
+  // contadores de campaña para que vuelva a la cola.
+  const { error } = await db.from('alumnos').upsert(filas, { onConflict: 'email' })
   if (error) {
     console.error(`\nNo se pudieron añadir: ${error.message}\n`)
     process.exit(1)

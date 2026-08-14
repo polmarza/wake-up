@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wake Up Heroes — Learning Heroes</title>
+
+    <!--
+      Sin CDN a propósito. Esto se proyecta en una sala con wifi de hackathon: si
+      Tailwind o Lucide no cargan, la presentación se cae delante del jurado. Todo
+      va embebido, los iconos son SVG inline y la tipografía tiene fallback de
+      sistema. Funciona sin conexión.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --lh-cyan: #61f2f2;
+        --lh-magenta: #ff2878;
+        --lh-blue: #243f4c;
+        --lh-white: #ffffff;
+        --suave: #5f7280;
+        --tenue: #93a5af;
+        --borde: #dde5e9;
+        --superficie: #f7f9fa;
+        --alto: 64px;
+        --pie: 76px;
+        --easing: cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+        color: var(--lh-blue);
+        background: var(--lh-white);
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Topbar ───────────────────────────────────────────────────────── */
+      .topbar {
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: var(--alto);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 32px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--borde);
+        z-index: 30;
+      }
+      .topbar.oculto {
+        display: none;
+      }
+      /* El topbar acompaña a la slide oscura: una franja blanca encima de un fondo
+         oscuro parte la pantalla justo donde no toca. */
+      .topbar.oscuro {
+        background: rgba(36, 63, 76, 0.92);
+        border-bottom-color: rgba(255, 255, 255, 0.14);
+      }
+      .topbar.oscuro .titulo,
+      .topbar.oscuro .contador {
+        color: rgba(255, 255, 255, 0.62);
+      }
+      .topbar .punto {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--lh-magenta);
+      }
+      .topbar .titulo {
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--suave);
+      }
+      .topbar .contador {
+        margin-left: auto;
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--tenue);
+      }
+      .progreso {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        height: 2px;
+        background: var(--lh-magenta);
+        transition: width 400ms var(--easing);
+      }
+
+      /* ── Slide ────────────────────────────────────────────────────────── */
+      .escenario {
+        position: fixed;
+        top: var(--alto);
+        bottom: var(--pie);
+        left: 0;
+        right: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .escenario.hero {
+        top: 0;
+      }
+      .slide {
+        min-height: 100%;
+        padding: 48px 64px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 1400px;
+        margin: 0 auto;
+        animation: entrar 480ms var(--easing);
+      }
+      .slide.centro {
+        align-items: center;
+        text-align: center;
+      }
+      @keyframes entrar {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      h1 {
+        font-size: clamp(48px, 6.5vw, 78px);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.02;
+      }
+      h2 {
+        font-size: clamp(34px, 4vw, 50px);
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        line-height: 1.08;
+      }
+      h3 {
+        font-size: clamp(24px, 2.4vw, 33px);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      p,
+      li {
+        font-size: clamp(19px, 1.7vw, 23px);
+        line-height: 1.55;
+        color: var(--suave);
+      }
+      .sub {
+        margin-top: 20px;
+        max-width: 60ch;
+      }
+      .rotulo {
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--tenue);
+      }
+      strong {
+        color: var(--lh-blue);
+        font-weight: 600;
+      }
+      .magenta {
+        color: var(--lh-magenta);
+      }
+
+      /* ── Piezas ───────────────────────────────────────────────────────── */
+      .rejilla {
+        display: grid;
+        gap: 22px;
+        margin-top: 42px;
+      }
+      .r3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .r2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @media (max-width: 900px) {
+        .r3,
+        .r2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .tarjeta {
+        border: 1px solid var(--borde);
+        border-radius: 16px;
+        padding: 32px;
+        background: var(--lh-white);
+        transition:
+          transform 200ms var(--easing),
+          border-color 200ms var(--easing);
+      }
+      .tarjeta:hover {
+        transform: translateY(-2px);
+        border-color: var(--tenue);
+      }
+      .tarjeta h3 {
+        margin-bottom: 10px;
+      }
+      .tarjeta p {
+        font-size: 19px;
+      }
+      .tarjeta .cifra {
+        font-size: 52px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+
+      .cifrota {
+        font-size: clamp(110px, 17vw, 210px);
+        font-weight: 700;
+        line-height: 0.88;
+        letter-spacing: -0.045em;
+      }
+
+      .lista {
+        list-style: none;
+        margin-top: 34px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .lista li {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .lista svg {
+        flex: none;
+        margin-top: 4px;
+      }
+
+      .barra-fila {
+        margin-top: 22px;
+      }
+      .barra-fila .cabeza {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+      }
+      .barra-fila .cabeza span:first-child {
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--lh-blue);
+      }
+      .canal {
+        height: 42px;
+        background: var(--superficie);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+      .relleno {
+        height: 100%;
+        border-radius: 8px;
+        width: 0;
+        transition: width 900ms var(--easing);
+      }
+
+      .aviso {
+        margin-top: 34px;
+        border: 1px solid rgba(240, 162, 2, 0.35);
+        background: rgba(240, 162, 2, 0.07);
+        border-radius: 16px;
+        padding: 28px 32px;
+      }
+      .aviso p {
+        font-size: 20px;
+      }
+      .aviso p + p {
+        margin-top: 12px;
+      }
+
+      .correo {
+        border: 1px solid var(--borde);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-top: 32px;
+        background: var(--lh-white);
+      }
+      .correo .asunto {
+        padding: 18px 30px;
+        border-bottom: 1px solid var(--borde);
+        background: var(--superficie);
+        font-size: 21px;
+        font-weight: 600;
+      }
+      .correo .cuerpo {
+        padding: 26px 30px;
+        font-size: 19.5px;
+        line-height: 1.62;
+        color: var(--lh-blue);
+        white-space: pre-line;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+
+      .oscuro {
+        background: var(--lh-blue);
+        color: var(--lh-white);
+      }
+      .oscuro h1,
+      .oscuro h2,
+      .oscuro h3,
+      .oscuro strong {
+        color: var(--lh-white);
+      }
+      .oscuro p,
+      .oscuro li {
+        color: rgba(255, 255, 255, 0.74);
+      }
+      .oscuro .rotulo {
+        color: var(--lh-cyan);
+      }
+      .oscuro .tarjeta {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .chip {
+        display: inline-block;
+        padding: 7px 16px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 600;
+        background: rgba(255, 40, 120, 0.1);
+        color: var(--lh-magenta);
+      }
+      .chip.cian {
+        background: rgba(97, 242, 242, 0.22);
+        color: #0f7f7f;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+        font-size: 20px;
+      }
+      th {
+        text-align: left;
+        font-size: 15px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        padding: 0 14px 12px;
+        font-weight: 600;
+      }
+      td {
+        padding: 15px 14px;
+        border-top: 1px solid var(--borde);
+      }
+      tr.gana td {
+        background: rgba(97, 242, 242, 0.14);
+      }
+      tr.muere td {
+        background: rgba(224, 49, 49, 0.06);
+      }
+
+      /* ── Pie de navegación ────────────────────────────────────────────── */
+      .pie {
+        position: fixed;
+        inset: auto 0 0 0;
+        height: var(--pie);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 0 32px;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid var(--borde);
+        z-index: 30;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 13px 26px;
+        border: 1px solid var(--borde);
+        background: var(--lh-white);
+        color: var(--lh-blue);
+        transition: all 180ms var(--easing);
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--tenue);
+        transform: translateY(-1px);
+      }
+      button.principal {
+        background: var(--lh-magenta);
+        border-color: var(--lh-magenta);
+        color: var(--lh-white);
+      }
+      button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      button:focus-visible {
+        outline: 2px solid var(--lh-magenta);
+        outline-offset: 2px;
+      }
+      .puntos {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .punto-nav {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--borde);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: all 200ms var(--easing);
+      }
+      .punto-nav.on {
+        background: var(--lh-magenta);
+        width: 26px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar" id="topbar">
+      <span id="logo-mini"></span>
+      <span class="punto"></span>
+      <span class="titulo">Wake Up Heroes</span>
+      <span class="contador" id="contador"></span>
+      <div class="progreso" id="progreso"></div>
+    </header>
+
+    <div class="escenario" id="escenario"><div class="slide" id="slide"></div></div>
+
+    <nav class="pie">
+      <button id="anterior">← Anterior</button>
+      <div class="puntos" id="puntos"></div>
+      <button id="siguiente" class="principal">Siguiente →</button>
+    </nav>
+
+    <script>
+      function logoSVG(width = 122) {
+        const height = (width * 32) / 122
+        return `<svg width="${width}" height="${height}" viewBox="0 0 122 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Learning Heroes" role="img" style="color: currentColor; display: block;"><path d="M4.5568 11.6416H13.6704V15.0592H0V0.246399H4.5568V11.6384V11.6416Z" fill="currentColor"/><path d="M29.168 3.664H20.0544V5.9424H29.168V9.36H20.0544V11.6384H29.168V15.056H15.4976V0.246399H29.168V3.664Z" fill="currentColor"/><path d="M41.472 13.2352H35.7984L35.0912 15.0592H30.08L36.1184 0.246399H41.1296L47.168 15.056H42.1568C42.1568 15.056 41.8848 14.2816 41.472 13.232V13.2352ZM39.7632 8.7904C38.8064 6.24 38.8512 3.664 38.8512 3.664H38.3968C38.3968 3.664 38.4864 6.2624 37.4848 8.7904L37.0976 9.8144H40.1728C40.0352 9.4496 39.9008 9.1072 39.7632 8.7904Z" fill="currentColor"/><path d="M61.8656 15.0592H57.3088C57.3088 12.9408 57.2864 12.1888 56.8544 11.1872C56.2848 9.8208 55.1456 9.3632 53.664 9.3632H52.4096V15.0592H47.8528V0.246399H56.192C60.4992 0.246399 61.6384 2.1824 61.6384 4.2336C61.6384 5.9424 60.2272 7.3088 56.8544 7.3088H55.8304V7.7632C61.6416 7.7632 61.8688 12.208 61.8688 15.056L61.8656 15.0592ZM52.4096 6.1728H55.44C56.3072 6.1728 57.0816 5.7856 57.0816 4.9184C57.0816 4.0512 56.3072 3.664 55.44 3.664H52.4096V6.1696V6.1728Z" fill="currentColor"/><path d="M79.4368 15.0592H74.8576L71.6672 10.7968L66.448 3.8944H65.9936C65.9936 3.8944 68.0448 6.288 68.0448 9.136V15.0592H63.4656V0.246399H68.0224L68.0448 0.223999V0.246399L76.4768 11.4112H76.9312C76.9312 11.4112 74.88 9.0176 74.88 6.1696V0.246399H79.4368V15.056V15.0592Z" fill="currentColor"/><path d="M85.8176 0.246399V15.056H81.2608V0.246399H85.8176Z" fill="currentColor"/><path d="M103.613 15.0592H99.0336L95.8432 10.7968L90.624 3.8944H90.1696C90.1696 3.8944 92.2208 6.288 92.2208 9.136V15.0592H87.6416V0.246399H92.1984L92.2208 0.223999V0.246399L100.653 11.4112H101.107C101.107 11.4112 99.056 9.0176 99.056 6.1696V0.246399H103.613V15.056V15.0592Z" fill="currentColor"/><path d="M121.728 15.0592H117.354C117.264 15.0592 117.171 14.9696 117.171 14.8544C117.171 14.7648 117.194 14.672 117.261 14.6272C118.045 13.9968 118.582 13.1392 118.928 12.3296H118.426C117.424 14.3456 115.28 15.264 112.726 15.264C109.194 15.264 105.206 12.416 105.206 7.632C105.206 3.4848 108.259 0 113.843 0C117.581 0 120.246 1.3664 121.27 3.8496L116.963 5.5136C116.371 4.192 115.437 3.4176 113.866 3.4176C111.587 3.4176 109.994 5.0368 109.994 7.632C109.994 10.2272 111.475 11.8464 113.754 11.8464C115.325 11.8464 116.512 11.184 116.694 10.4576H113.754V7.0624H121.728V15.0592Z" fill="currentColor"/><path d="M42.64 31.7696H38.0832V26.0736H31.248V31.7696H26.6912V16.96H31.248V22.656H38.0832V16.96H42.64V31.7696Z" fill="currentColor"/><path d="M58.1376 20.3776H49.024V22.656H58.1376V26.0736H49.024V28.352H58.1376V31.7696H44.4672V16.96H58.1376V20.3776Z" fill="currentColor"/><path d="M73.9744 31.7696H69.4176C69.4176 29.6512 69.3952 28.8992 68.9632 27.8976C68.3936 26.5312 67.2544 26.0736 65.7728 26.0736H64.5184V31.7696H59.9616V16.96H68.3008C72.608 16.96 73.7472 18.896 73.7472 20.9472C73.7472 22.656 72.336 24.0224 68.9632 24.0224H67.9392V24.4768C73.7504 24.4768 73.9776 28.9216 73.9776 31.7696H73.9744ZM64.5184 22.8832H67.5488C68.416 22.8832 69.1904 22.496 69.1904 21.6288C69.1904 20.7616 68.416 20.3744 67.5488 20.3744H64.5184V22.88V22.8832Z" fill="currentColor"/><path d="M74.2048 24.3648C74.2048 20.2176 77.2576 16.7328 82.8416 16.7328C88.4256 16.7328 91.5232 20.2176 91.5232 24.3648C91.5232 28.512 88.4256 31.9968 82.8416 31.9968C77.2576 31.9968 74.2048 28.512 74.2048 24.3648ZM82.8608 20.1472C80.5824 20.1472 78.9888 21.7664 78.9888 24.3616C78.9888 26.9568 80.5824 28.576 82.8608 28.576C85.1392 28.576 86.6208 26.9568 86.6208 24.3616C86.6208 21.7664 85.1392 20.1472 82.8608 20.1472Z" fill="currentColor"/><path d="M106.326 20.3776H97.2128V22.656H106.326V26.0736H97.2128V28.352H106.326V31.7696H92.656V16.96H106.326V20.3776Z" fill="currentColor"/><path d="M121.728 27.2128C121.728 30.7456 117.99 31.9968 114.573 31.9968C111.658 31.9968 108.717 31.0848 107.146 30.0608C108.739 26.9856 107.35 29.7184 108.947 26.6432C109.814 27.2128 112.138 28.2368 114.416 28.2368C116.285 28.2368 117.174 27.872 117.174 26.9824C117.152 24.4768 107.834 27.0976 107.834 21.4016C107.834 18.3264 110.432 16.7296 114.122 16.7296C117.219 16.7296 119.341 17.5488 121.277 18.688C119.683 21.7408 119.658 21.7408 119.658 21.7408C117.29 19.9168 112.39 19.4624 112.39 21.2864C112.39 23.4752 121.731 21.4016 121.731 27.2096L121.728 27.2128Z" fill="currentColor"/></svg>`
+      }
+
+      const ico = {
+        veto: `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ff2878" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>`,
+        ok: `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#12a594" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
+        punto: `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#243f4c" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/></svg>`,
+      }
+
+      const slides = [
+        {
+          hero: true,
+          html: `
+            <div style="color: var(--lh-blue); margin-bottom: 46px;">${logoSVG(300)}</div>
+            <h1>Wake&nbsp;Up<br />Heroes</h1>
+            <p class="sub" style="font-size: 27px; max-width: 46ch;">
+              Recuperamos alumnos que dejaron un curso a medias.
+              Con criterio auditable, revisión humana y un grupo de control.
+            </p>`,
+        },
+        {
+          titulo: 'El problema',
+          html: `
+            <h2>Dos de cada tres personas que pagaron<br />están hoy fuera del circuito.</h2>
+            <div class="rejilla r3">
+              <div class="tarjeta"><div class="cifra">183</div><p style="margin-top:12px">alumnos inactivos, con el curso a medias</p></div>
+              <div class="tarjeta"><div class="cifra">77</div><p style="margin-top:12px">lo terminaron y nadie les ofreció el siguiente paso</p></div>
+              <div class="tarjeta"><div class="cifra magenta">222</div><p style="margin-top:12px">días de inactividad de mediana. Cuanto más pasa, más frío está</p></div>
+            </div>`,
+        },
+        {
+          titulo: 'Por qué no se hace ya',
+          html: `
+            <h2>No es falta de ganas.<br />Es coste por unidad.</h2>
+            <ul class="lista">
+              <li>${ico.veto}<span><strong>Escribir a mano no escala.</strong> El email que necesita quien se atascó en la sesión 2 no se parece al de quien terminó el curso entero.</span></li>
+              <li>${ico.veto}<span><strong>El envío masivo es peor que no hacer nada.</strong> Quema la lista, dispara las bajas — y con 33 alumnos sin consentimiento, deja de ser un problema de conversión para ser uno legal.</span></li>
+              <li>${ico.veto}<span><strong>Nadie sabe qué funciona.</strong> 317 emails y 42 vueltas, pero sin grupo de control ese 13% no dice nada: parte de esa gente habría vuelto sola.</span></li>
+            </ul>`,
+        },
+        {
+          titulo: 'Qué hemos construido',
+          html: `
+            <h2>Un panel que decide a quién escribir,<br />escribe el email y mide si sirvió.</h2>
+            <div class="rejilla r3">
+              <div class="tarjeta"><span class="chip">1 · A quién</span><h3 style="margin-top:16px">Política en SQL</h3><p>Consentimiento, rebotes, quejas, techo de intentos, enfriamiento. La aplicación no tiene otra forma de sacar candidatos.</p></div>
+              <div class="tarjeta"><span class="chip">2 · Qué decir</span><h3 style="margin-top:16px">El sistema aprende</h3><p>Ocho variantes con sus propios contadores de éxito. Las que funcionan se usan más; las que no, se apagan solas.</p></div>
+              <div class="tarjeta"><span class="chip">3 · Si sirvió</span><h3 style="margin-top:16px">Grupo de control</h3><p>El 15% de los alumnos no recibe nada nunca. Es la única forma de saber cuántos no habrían vuelto solos.</p></div>
+            </div>
+            <p style="margin-top:34px"><strong>Y ningún email sale sin que una persona lo lea y le dé al botón.</strong></p>`,
+        },
+        {
+          titulo: 'A quién se puede escribir',
+          html: `
+            <div style="display:flex; align-items:baseline; gap:28px; flex-wrap:wrap;">
+              <div><div class="cifrota">300</div><span class="rotulo">alumnos en el padrón</span></div>
+              <div style="font-size:64px; color:var(--tenue)">→</div>
+              <div><div class="cifrota magenta">97</div><span class="rotulo">se les puede escribir hoy</span></div>
+            </div>
+            <p class="sub" style="margin-top:38px">
+              Los otros 200 quedan fuera por consentimiento, baja, rebote, queja, techo de tres
+              intentos, enfriamiento de catorce días o por pertenecer al grupo de control.
+            </p>
+            <p style="margin-top:18px"><strong>Esa decisión no vive en el código ni en el prompt: vive en una vista de base de datos.</strong> Es la única fuente de candidatos, así que ninguna parte del sistema puede saltársela — ni por error ni por un descuido al reescribir código.</p>`,
+        },
+        {
+          titulo: 'Qué decirle a cada uno',
+          html: `
+            <h2>El sistema aprende qué mensaje funciona</h2>
+            <p class="sub">Cada variante guarda sus propios resultados. En vez de quedarse siempre con la mejor —que con muestras pequeñas es quedarse con el ruido— reparte los envíos en proporción a lo que sabe, y sigue explorando.</p>
+            <table>
+              <thead><tr><th>Variante</th><th>Tono</th><th>Envíos</th><th>Vueltas</th><th>Tasa</th></tr></thead>
+              <tbody>
+                <tr class="gana"><td><strong>Casi lo tenías: te faltan N sesiones</strong></td><td>directo</td><td>31</td><td>9</td><td><strong>29,0 %</strong> &nbsp;<span class="chip cian">va ganando</span></td></tr>
+                <tr><td>Terminaste el curso. ¿Qué viene después?</td><td>directo</td><td>81</td><td>18</td><td>22,2 %</td></tr>
+                <tr><td>Tu sitio en el curso sigue guardado</td><td>empático</td><td>54</td><td>5</td><td>9,3 %</td></tr>
+                <tr class="muere"><td><strong>Último aviso antes de liberar tu plaza</strong></td><td>urgencia</td><td>24</td><td>0</td><td><strong>0,0 %</strong> &nbsp;<span class="chip">apagándose</span></td></tr>
+              </tbody>
+            </table>
+            <p style="margin-top:26px">La urgencia falsa lleva 24 envíos y cero resultados. <strong>El sistema la está apagando solo. Nadie se lo ha dicho.</strong></p>`,
+        },
+        {
+          titulo: 'El email',
+          html: `
+            <h2>Gonzalo dejó el curso por dinero</h2>
+            <p class="sub">Sesión 3 de 6 en Automatizaciones con n8n. 41 días sin entrar. Motivo declarado: económico.</p>
+            <div class="correo">
+              <div class="asunto">Gonzalo, tienes medio curso de n8n hecho</div>
+              <div class="cuerpo">Vi que llevas 3 de las 6 sesiones y que hace unas semanas que no entras. Me dijiste que lo dejaste por motivos económicos, y eso lo entiendo perfectamente.
+
+Solo quería decirte una cosa: la mitad que ya hiciste no se ha perdido. Sigue ahí, y el curso te espera en la sesión 4, justo donde lo dejaste.
+
+Y si ahora no es el momento, tampoco pasa nada: no es un fracaso, es una pausa.</div>
+            </div>
+            <p style="margin-top:26px"><strong>No le ofrece ningún descuento.</strong> El sistema tiene prohibido prometer cosas que la escuela tendría que cumplir después, y un validador lo comprueba antes de que el texto llegue a la pantalla.</p>`,
+        },
+        {
+          titulo: 'Por qué hay una persona en medio',
+          oscuro: true,
+          html: `
+            <h2>«hay meses en que las cuentas <span class="magenta">manrdan</span>»</h2>
+            <p class="sub" style="font-size:25px">Una errata, en el email de Gonzalo. La única en decenas de correos generados — pero ahí estaba.</p>
+            <p style="margin-top:30px; font-size:25px"><strong style="color:var(--lh-cyan)">La IA redacta. La persona firma.</strong> Por eso ningún email sale sin que alguien lo lea: no porque el modelo escriba mal, sino porque el coste de un correo mal calibrado a un exalumno supera al valor que intenta recuperar.</p>`,
+        },
+        {
+          titulo: 'El trabajo ya está hecho al llegar',
+          html: `
+            <h2>Cada mañana, los borradores<br />están escritos antes que tú.</h2>
+            <div class="rejilla r3">
+              <div class="tarjeta"><div class="cifra">10</div><p style="margin-top:12px">borradores preparados en la última ejecución</p></div>
+              <div class="tarjeta"><div class="cifra">62<span style="font-size:28px">s</span></div><p style="margin-top:12px">en total, sin ningún fallo</p></div>
+              <div class="tarjeta"><div class="cifra magenta">0</div><p style="margin-top:12px">emails enviados sin que una persona los apruebe</p></div>
+            </div>
+            <p style="margin-top:34px"><strong>Prepara, no envía.</strong> Ese límite no es técnico —dejar que despache la cola serían pocas líneas— sino la decisión de producto de la que cuelga todo lo demás. Lo que cambia es de quién es el trabajo: de redactar, pasas a decidir.</p>`,
+        },
+        {
+          titulo: 'Resultados',
+          html: `
+            <h2>¿Cuántos no habrían vuelto solos?</h2>
+            <div class="barra-fila">
+              <div class="cabeza"><span>Recibieron email</span><span>42 de 166 volvieron</span></div>
+              <div class="canal"><div class="relleno" data-ancho="63" style="background:var(--lh-magenta)"></div></div>
+            </div>
+            <div class="barra-fila">
+              <div class="cabeza"><span>Grupo de control</span><span>0 de 39 volvieron</span></div>
+              <div class="canal"><div class="relleno" data-ancho="1.5" style="background:#3b82c4"></div></div>
+            </div>
+            <div class="rejilla r3" style="margin-top:40px">
+              <div class="tarjeta"><div class="cifra magenta">25,3 %</div><p style="margin-top:10px">de los contactados volvieron</p></div>
+              <div class="tarjeta"><div class="cifra">13</div><p style="margin-top:10px">reinscripciones — las únicas que facturan</p></div>
+              <div class="tarjeta"><div class="cifra">4.335 €</div><p style="margin-top:10px">ingreso estimado del ciclo</p></div>
+            </div>`,
+        },
+        {
+          titulo: 'Lo que no os vamos a colar',
+          html: `
+            <h2>Ese 25,3 % <span class="magenta">no os lo creáis</span>.</h2>
+            <div class="aviso">
+              <p><strong>El grupo de control tiene cero reactivaciones sobre 39 alumnos.</strong> En datos reales eso no pasa nunca: siempre hay gente que vuelve sola, y ese suelo es justo lo que un grupo de control existe para medir.</p>
+              <p>Es un artefacto de cómo se generó el dataset sintético, que solo marca como reactivado a quien recibió un email.</p>
+            </div>
+            <p style="margin-top:32px; font-size:25px"><strong>Lo que sí demuestra: la medición está montada.</strong> Hay grupo de control, se compara contra él, y el número saldría igual de rojo si el sistema no funcionara. La magnitud necesita datos reales.</p>`,
+        },
+        {
+          titulo: 'Conceptos',
+          html: `
+            <h2>Tres palabras que vais a oír</h2>
+            <div class="rejilla r3">
+              <div class="tarjeta"><h3>Grupo de control</h3><p style="margin-top:12px">Alumnos que <strong>nunca</strong> reciben nada, elegidos al azar. Sin ellos no se puede saber si la gente volvió por el email o habría vuelto igual.</p></div>
+              <div class="tarjeta"><h3>Uplift</h3><p style="margin-top:12px">La diferencia entre los que recibieron email y los del grupo de control. Es lo único que demuestra que la causa fuiste tú.</p></div>
+              <div class="tarjeta"><h3>Reparto por resultados</h3><p style="margin-top:12px">En vez de usar siempre la variante con mejor marca, el sistema reparte los envíos según lo que sabe de cada una, y sigue probando las dudosas. Con pocos datos, la mejor marca suele ser suerte.</p></div>
+            </div>`,
+        },
+        {
+          titulo: 'Qué falta',
+          html: `
+            <h2>Lo que sabemos que no está</h2>
+            <ul class="lista">
+              <li>${ico.punto}<span><strong>Datos reales.</strong> Los 300 alumnos son inventados: dominio reservado y teléfonos que no existen. Un envío accidental no alcanza a nadie.</span></li>
+              <li>${ico.punto}<span><strong>Significancia estadística.</strong> Ahora enseñamos la diferencia bruta. Con datos reales hay que decir también si es fiable.</span></li>
+              <li>${ico.punto}<span><strong>WhatsApp.</strong> 80 de los 300 lo prefieren al correo, y hoy no lo usamos.</span></li>
+              <li>${ico.ok}<span><strong>Lo que sí está y funciona hoy:</strong> política de contacto auditable, generación con contexto real, revisión humana, baja en un clic, preparación automática cada mañana y medición contra grupo de control.</span></li>
+            </ul>`,
+        },
+        {
+          hero: true,
+          html: `
+            <div style="color: var(--lh-blue); margin-bottom: 42px;">${logoSVG(280)}</div>
+            <h2 style="max-width: 20ch">El activo más barato de una escuela son sus propios alumnos.</h2>
+            <p class="sub" style="font-size: 25px; max-width: 44ch;">Wake Up Heroes solo se encarga de no desperdiciarlo — y de saber si lo está consiguiendo.</p>
+            <p style="margin-top: 40px; font-size: 19px; color: var(--tenue)">wake-up-beta.vercel.app &nbsp;·&nbsp; github.com/polmarza/wake-up</p>`,
+        },
+      ]
+
+      let actual = 0
+      const $ = (id) => document.getElementById(id)
+
+      function pintar() {
+        const s = slides[actual]
+        const escenario = $('escenario')
+
+        $('topbar').classList.toggle('oculto', !!s.hero)
+        $('topbar').classList.toggle('oscuro', !!s.oscuro)
+        $('logo-mini').firstElementChild.style.color = s.oscuro ? 'var(--lh-white)' : 'var(--lh-blue)'
+        escenario.classList.toggle('hero', !!s.hero)
+
+        const clases = ['slide']
+        if (s.hero) clases.push('centro')
+        escenario.innerHTML = `<div class="${clases.join(' ')}" id="slide">
+          ${s.titulo && !s.hero ? `<span class="rotulo">${s.titulo}</span><div style="height:18px"></div>` : ''}
+          ${s.html}
+        </div>`
+
+        document.body.style.background = s.oscuro ? 'var(--lh-blue)' : 'var(--lh-white)'
+        escenario.style.background = s.oscuro ? 'var(--lh-blue)' : 'var(--lh-white)'
+        escenario.querySelector('.slide').classList.toggle('oscuro', !!s.oscuro)
+
+        $('contador').textContent = `${actual + 1} / ${slides.length}`
+        $('progreso').style.width = `${((actual + 1) / slides.length) * 100}%`
+        $('anterior').disabled = actual === 0
+        $('siguiente').disabled = actual === slides.length - 1
+
+        $('puntos').innerHTML = slides
+          .map((_, i) => `<button class="punto-nav ${i === actual ? 'on' : ''}" data-i="${i}" aria-label="Slide ${i + 1}"></button>`)
+          .join('')
+
+        // Las barras se animan después de pintar, para que se vean crecer.
+        requestAnimationFrame(() => {
+          escenario.querySelectorAll('.relleno').forEach((barra) => {
+            barra.style.width = `${barra.dataset.ancho}%`
+          })
+        })
+      }
+
+      function ir(n) {
+        actual = Math.max(0, Math.min(slides.length - 1, n))
+        pintar()
+      }
+
+      $('anterior').onclick = () => ir(actual - 1)
+      $('siguiente').onclick = () => ir(actual + 1)
+      $('puntos').onclick = (e) => {
+        const b = e.target.closest('.punto-nav')
+        if (b) ir(Number(b.dataset.i))
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); ir(actual + 1) }
+        if (e.key === 'ArrowLeft') ir(actual - 1)
+      })
+
+      $('logo-mini').innerHTML = `<span style="color: var(--lh-blue); display:block">${logoSVG(88)}</span>`
+      pintar()
+    </script>
+  </body>
+</html>
