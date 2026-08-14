@@ -7,6 +7,8 @@ import { plantillasDeSegmento } from '@/lib/plantillas/consultas'
 import { elegirPlantilla } from '@/lib/bandit/thompson'
 import { generarBorrador, PROMPT_VERSION } from '@/lib/generacion/generar'
 import { enviarEmail } from '@/lib/email/enviar'
+import { destinatariosRealesPermitidos } from '@/lib/config/entorno'
+import { correoPermitido } from '@/lib/config/acceso'
 
 /**
  * Las mutaciones de la cola. Todas pasan por aquí, y todas terminan en una función
@@ -99,7 +101,7 @@ export async function aprobarAccion(
 
   const { data: envio, error: errorLectura } = await supabase
     .from('envios')
-    .select('asunto, cuerpo')
+    .select('asunto, cuerpo, segmento')
     .eq('id', envioId)
     .single()
 
@@ -117,7 +119,7 @@ export async function aprobarAccion(
   if (intentarEnvioReal) {
     const { data: alumno } = await supabase
       .from('alumnos')
-      .select('email, baja_token')
+      .select('email, baja_token, curso_id')
       .eq('id', alumnoId)
       .single()
 
@@ -126,7 +128,11 @@ export async function aprobarAccion(
         destinatario: alumno.email,
         asunto: envio.asunto ?? '',
         cuerpo: envio.cuerpo ?? '',
-        bajaToken: alumno.baja_token,
+        contexto: {
+          cursoId: alumno.curso_id,
+          segmento: envio.segmento,
+          bajaToken: alumno.baja_token,
+        },
       })
 
       if (resultado.enviado) {
@@ -178,23 +184,81 @@ export async function probarEnMiBuzonAccion(envioId: string): Promise<Respuesta>
 
   const { data: envio, error } = await supabase
     .from('envios')
-    .select('asunto, cuerpo, alumno_id, alumnos(email, baja_token)')
+    .select('asunto, cuerpo, alumno_id, segmento, alumnos(email, baja_token, curso_id)')
     .eq('id', envioId)
     .single()
 
   if (error || !envio) return { ok: false, error: 'No se encontró el borrador' }
 
-  const alumno = envio.alumnos as unknown as { email: string; baja_token: string } | null
+  const alumno = envio.alumnos as unknown as {
+    email: string
+    baja_token: string
+    curso_id: string
+  } | null
   if (!alumno) return { ok: false, error: 'No se encontró el alumno' }
 
   const resultado = await enviarEmail({
     destinatario: alumno.email,
     asunto: envio.asunto ?? '',
     cuerpo: envio.cuerpo ?? '',
-    bajaToken: alumno.baja_token,
+    contexto: {
+      cursoId: alumno.curso_id,
+      segmento: envio.segmento,
+      bajaToken: alumno.baja_token,
+    },
   })
 
   return resultado.enviado
     ? { ok: true, mensaje: 'Enviado a tu buzón' }
     : { ok: false, error: resultado.motivo }
+}
+
+/**
+ * Devuelve a la cola a una dirección de pruebas del equipo.
+ *
+ * **No toca la política de supresión.** La vista `candidatos_reactivacion` sigue
+ * exactamente igual: lo único que hace esto es poner los contadores de campaña de un
+ * alumno a cero, que es lo mismo que pasaría si nunca se le hubiera escrito.
+ *
+ * Solo funciona con las direcciones autorizadas para envío real —los buzones del
+ * equipo—, así que ningún alumno del dataset puede volver a la cola por esta vía y
+ * recibir un cuarto correo. Sin esa condición, esto sería una puerta trasera al techo
+ * de tres intentos.
+ */
+export async function reiniciarPruebaAccion(alumnoId: string): Promise<Respuesta> {
+  const supabase = await clienteServidor()
+
+  const { data: alumno, error: errorLectura } = await supabase
+    .from('alumnos')
+    .select('email')
+    .eq('id', alumnoId)
+    .single()
+
+  if (errorLectura || !alumno) return { ok: false, error: 'No se encontró el alumno' }
+
+  if (!correoPermitido(alumno.email, destinatariosRealesPermitidos())) {
+    return {
+      ok: false,
+      error:
+        `${alumno.email} no es una dirección de pruebas del equipo. Reiniciar los intentos de un ` +
+        'alumno real sería saltarse el techo de tres correos.',
+    }
+  }
+
+  const { error } = await supabase
+    .from('alumnos')
+    .update({
+      emails_enviados_total: 0,
+      ultimo_envio_at: null,
+      reactivado: false,
+      reactivado_at: null,
+      tipo_reactivacion: null,
+    })
+    .eq('id', alumnoId)
+
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/cola')
+  revalidatePath(`/cola/${alumnoId}`)
+  return { ok: true, mensaje: 'Listo: vuelve a estar en la cola' }
 }

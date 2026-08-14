@@ -85,7 +85,7 @@ src/
 │   ├── candidatos/             → Lectura de la vista y priorización
 │   ├── bandit/                 → Thompson sampling y actualización de priors
 │   ├── generacion/             → Prompts, llamada a Claude, validación del resultado
-│   └── email/                  → Render del email y cliente de Resend
+│   └── email/                  → Render del email, firma y cliente de Resend
 supabase/
 ├── migrations/                 → Migraciones SQL en orden
 ├── seed/                       → Dataset sintético y esquema original del hackathon

@@ -71,6 +71,19 @@ export async function obtenerCandidato(id: string): Promise<Candidato | null> {
   return (data as Candidato) ?? null
 }
 
+/** Datos mínimos de un alumno aunque ya no esté en la cola. */
+export async function alumnoPorId(id: string): Promise<{ email: string; nombre: string } | null> {
+  const supabase = await clienteServidor()
+
+  const { data } = await supabase
+    .from('alumnos')
+    .select('email, nombre')
+    .eq('id', id)
+    .maybeSingle()
+
+  return (data as { email: string; nombre: string } | null) ?? null
+}
+
 export type EnvioHistorico = {
   id: string
   plantilla_id: string | null

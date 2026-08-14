@@ -1,7 +1,7 @@
 import 'server-only'
 import { Resend } from 'resend'
 import { entorno, motivoNoEnviable } from '@/lib/config/entorno'
-import { renderHtml, renderTexto } from './render'
+import { renderHtml, renderTexto, type Contexto } from './render'
 
 /**
  * Envío real. Todo lo que llega aquí ya pasó por la aprobación humana; esta capa
@@ -19,7 +19,7 @@ export async function enviarEmail(parametros: {
   destinatario: string
   asunto: string
   cuerpo: string
-  bajaToken: string
+  contexto: Contexto
 }): Promise<ResultadoEnvio> {
   const impedimento = motivoNoEnviable(parametros.destinatario)
   if (impedimento) return { enviado: false, motivo: impedimento }
@@ -31,8 +31,8 @@ export async function enviarEmail(parametros: {
     from: env.RESEND_FROM!,
     to: parametros.destinatario,
     subject: parametros.asunto,
-    html: renderHtml(parametros.cuerpo, parametros.bajaToken),
-    text: renderTexto(parametros.cuerpo, parametros.bajaToken),
+    html: renderHtml(parametros.cuerpo, parametros.contexto),
+    text: renderTexto(parametros.cuerpo, parametros.contexto),
   })
 
   if (error) return { enviado: false, motivo: error.message }

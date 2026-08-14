@@ -3,6 +3,7 @@ import {
   obtenerCandidato,
   historialDeEnvios,
   borradorPendiente,
+  alumnoPorId,
   ETIQUETAS_SEGMENTO,
   ETIQUETAS_MOTIVO,
   TECHO_INTENTOS,
@@ -10,7 +11,9 @@ import {
 } from '@/lib/candidatos/consultas'
 import { plantillasDeSegmento } from '@/lib/plantillas/consultas'
 import { tasaEsperada } from '@/lib/bandit/thompson'
-import { motivoNoEnviable } from '@/lib/config/entorno'
+import { motivoNoEnviable, destinatariosRealesPermitidos } from '@/lib/config/entorno'
+import { correoPermitido } from '@/lib/config/acceso'
+import { BotonReiniciar } from '@/components/cola/BotonReiniciar'
 import { BorradorPanel } from '@/components/cola/BorradorPanel'
 
 export const dynamic = 'force-dynamic'
@@ -29,15 +32,33 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
   const candidato = await obtenerCandidato(id)
 
   if (!candidato) {
+    // Puede seguir existiendo como alumno aunque haya salido de la cola.
+    const alumno = await alumnoPorId(id)
+    const esDePruebas = alumno
+      ? correoPermitido(alumno.email, destinatariosRealesPermitidos())
+      : false
+
     return (
       <main className="mx-auto max-w-2xl px-8 py-16">
         <h1 className="font-display text-2xl font-bold">Este alumno ya no es elegible</h1>
         <p className="mt-3 text-sm text-texto-suave">
           Puede haberse dado de baja, haber rebotado, haber agotado sus tres intentos o estar en
-          periodo de enfriamiento. No aparece en la vista de candidatos, así que no se le puede
-          escribir.
+          periodo de enfriamiento de catorce días. No aparece en la vista de candidatos, así que no
+          se le puede escribir.
         </p>
-        <Link href="/cola" className="mt-6 inline-block text-sm text-rosa underline-offset-2 hover:underline">
+
+        {esDePruebas && (
+          <div className="mt-8 rounded-[10px] border border-borde bg-superficie px-5 py-4">
+            <p className="text-[15px] text-texto-suave">
+              <strong>{alumno!.email}</strong> es una dirección de pruebas del equipo, así que puedes
+              devolverla a la cola y volver a empezar. Esto no cambia la política de contacto: solo
+              pone sus contadores a cero, igual que si nunca se le hubiera escrito.
+            </p>
+            <BotonReiniciar alumnoId={id} />
+          </div>
+        )}
+
+        <Link href="/cola" className="mt-8 inline-block text-sm text-rosa underline-offset-2 hover:underline">
           ← Volver a la cola
         </Link>
       </main>

@@ -103,6 +103,9 @@ plantilla, hemos fallado aunque el dashboard diga que todo va bien.
 - **Envío simulado por defecto**, registrado en `envios` como si fuera real. Los emails del dataset
   son `@example.com` y no son entregables por diseño.
 - **Envío real de prueba a la dirección del operador** vía Resend, con el mismo email renderizado.
+- **Firma humana en todos los emails.** Dos profesores ficticios repartidos por curso, con nombre,
+  cargo y correo. La añade el render, no el modelo: la identidad de quien escribe no puede depender
+  de que Claude se acuerde de firmar.
 - **Dashboard de resultados:** tasa de reactivación por segmento y por plantilla, comparación
   tratamiento vs holdout, y evolución de los priors de cada variante.
 
