@@ -295,6 +295,9 @@ Su ficha está construida a propósito para la demo:
 | Inactividad | 22 días | Justo por encima del mínimo de 21, así que aparece de los primeros en la cola |
 | Motivo declarado | `falta_tiempo` | Permite enseñar cómo el motivo condiciona el tono |
 
+Para una demo con varias personas del equipo, `scripts/anadir-alumnos-demo.ts` hace lo mismo con
+una lista de correos, repartiendo perfiles distintos (ids `…-00000000001X`).
+
 Tiene un id fijo (`00000000-0000-4000-8000-000000000001`) para que reejecutar el seed lo actualice
 en lugar de duplicarlo. Es también el único alumno al que se le puede mandar un email real, porque
 su dirección coincide con `EMAIL_OPERADOR`.
