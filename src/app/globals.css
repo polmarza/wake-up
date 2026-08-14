@@ -36,6 +36,17 @@
   --font-display: var(--fuente-display), system-ui, sans-serif;
   --font-sans: var(--fuente-sans), system-ui, sans-serif;
 
+  /*
+   * Escala tipográfica subida ~2px sobre la de Tailwind. Esto se enseña proyectado
+   * y se lee de pie: 12px en una pantalla a tres metros no es legible, y el aviso
+   * más importante de la aplicación estaba escrito justo en ese tamaño.
+   */
+  --text-xs: 0.8125rem; /* 13px */
+  --text-sm: 0.9375rem; /* 15px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.1875rem; /* 19px */
+  --text-xl: 1.375rem; /* 22px */
+
   --radius-card: 10px;
   --radius-control: 6px;
 }
@@ -44,7 +55,7 @@ body {
   background: #fff;
   color: var(--color-texto);
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
 }
 

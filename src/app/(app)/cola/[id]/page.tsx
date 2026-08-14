@@ -18,8 +18,8 @@ export const dynamic = 'force-dynamic'
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: React.ReactNode }) {
   return (
     <div className="flex justify-between gap-4 border-b border-borde py-2 last:border-0">
-      <span className="text-[12px] tracking-wide text-texto-suave uppercase">{etiqueta}</span>
-      <span className="text-right text-[13px] font-medium tabular">{valor}</span>
+      <span className="text-[14px] tracking-wide text-texto-suave uppercase">{etiqueta}</span>
+      <span className="text-right text-[15px] font-medium tabular">{valor}</span>
     </div>
   )
 }
@@ -117,10 +117,10 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
           </div>
 
           <div className="rounded-[10px] border border-borde bg-superficie px-4 py-3">
-            <p className="text-[12px] font-medium tracking-wide text-texto-suave uppercase">
+            <p className="text-[14px] font-medium tracking-wide text-texto-suave uppercase">
               Por qué es elegible
             </p>
-            <ul className="mt-2 space-y-1 text-[13px] text-texto-suave">
+            <ul className="mt-2 space-y-1 text-[15px] text-texto-suave">
               <li>Dio consentimiento de marketing y no se ha dado de baja</li>
               <li>Sin rebote duro ni queja de spam</li>
               <li>Grupo de tratamiento, no de control</li>
@@ -136,15 +136,15 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
 
           {plantillaElegida && (
             <div className="rounded-[10px] border border-borde px-4 py-3">
-              <p className="text-[12px] font-medium tracking-wide text-texto-suave uppercase">
+              <p className="text-[14px] font-medium tracking-wide text-texto-suave uppercase">
                 Plantilla elegida por el bandit
               </p>
-              <p className="mt-1 font-mono text-[13px]">{plantillaElegida.id}</p>
-              <p className="mt-1 text-[13px] text-texto-suave">
+              <p className="mt-1 font-mono text-[15px]">{plantillaElegida.id}</p>
+              <p className="mt-1 text-[15px] text-texto-suave">
                 Tono {plantillaElegida.tono} · {plantillaElegida.longitud} ·{' '}
                 {plantillaElegida.reactivaciones}/{plantillaElegida.envios} reactivaciones
               </p>
-              <p className="mt-2 font-mono text-[12px] text-texto-tenue">
+              <p className="mt-2 font-mono text-[14px] text-texto-tenue">
                 α {plantillaElegida.alpha} · β {plantillaElegida.beta} · esperada{' '}
                 {(tasaEsperada(plantillaElegida) * 100).toFixed(1)}%
               </p>
@@ -153,12 +153,12 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
 
           {enviados.length > 0 && (
             <div className="rounded-[10px] border border-borde px-4 py-3">
-              <p className="text-[12px] font-medium tracking-wide text-texto-suave uppercase">
+              <p className="text-[14px] font-medium tracking-wide text-texto-suave uppercase">
                 Ya se le escribió
               </p>
               <ul className="mt-2 space-y-2">
                 {enviados.map((envio) => (
-                  <li key={envio.id} className="text-[13px]">
+                  <li key={envio.id} className="text-[15px]">
                     <span className="text-texto-tenue">{envio.enviado_at?.slice(0, 10)}</span> ·{' '}
                     {envio.asunto}
                     {envio.abierto_at && <span className="text-exito"> · abierto</span>}
@@ -174,7 +174,7 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-lg font-semibold">Borrador</h2>
             <span
-              className={`rounded-full px-2.5 py-1 text-[12px] font-medium ${
+              className={`rounded-full px-2.5 py-1 text-[14px] font-medium ${
                 envioRealDisponible ? 'bg-rosa/10 text-rosa' : 'bg-superficie text-texto-suave'
               }`}
             >
@@ -183,7 +183,7 @@ export default async function Revisar({ params }: { params: Promise<{ id: string
           </div>
 
           {motivoSinEnvioReal && (
-            <p className="mb-4 rounded-[10px] border border-borde bg-superficie px-4 py-3 text-[13px] text-texto-suave">
+            <p className="mb-4 rounded-[10px] border border-borde bg-superficie px-4 py-3 text-[15px] text-texto-suave">
               {motivoSinEnvioReal} El envío se registrará igualmente en el historial, con todos sus
               efectos: consume intento y activa el enfriamiento de 14 días.
             </p>

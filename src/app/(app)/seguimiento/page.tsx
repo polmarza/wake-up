@@ -46,7 +46,7 @@ export default async function Seguimiento() {
         </p>
       ) : (
         <div className="mt-4 overflow-x-auto rounded-[10px] border border-borde">
-          <table className="w-full text-left text-[13px]">
+          <table className="w-full text-left text-[15px]">
             <thead className="border-b border-borde bg-superficie">
               <tr className="text-xs tracking-wide text-texto-suave uppercase">
                 <th className="px-4 py-3 font-medium">Alumno</th>
@@ -64,7 +64,7 @@ export default async function Seguimiento() {
                     <div className="font-medium">
                       {envio.nombre} {envio.apellidos}
                     </div>
-                    <div className="text-[12px] text-texto-tenue">
+                    <div className="text-[14px] text-texto-tenue">
                       {ETIQUETAS_SEGMENTO[envio.segmento as Segmento] ?? envio.segmento}
                     </div>
                   </td>
@@ -76,10 +76,10 @@ export default async function Seguimiento() {
                       {envio.asunto}
                     </div>
                   </td>
-                  <td className="px-4 py-2.5 font-mono text-[11px] text-texto-tenue">
+                  <td className="px-4 py-2.5 font-mono text-[13px] text-texto-tenue">
                     {envio.plantilla_id}
                   </td>
-                  <td className="px-4 py-2.5 text-[12px] text-texto-suave">
+                  <td className="px-4 py-2.5 text-[14px] text-texto-suave">
                     {envio.abierto_at ? 'abrió' : '—'}
                     {envio.respondido ? ' · respondió' : ''}
                   </td>
@@ -103,7 +103,7 @@ export default async function Seguimiento() {
         <>
           <h2 className="mt-10 font-display text-lg font-semibold">Ya volvieron</h2>
           <div className="mt-4 overflow-x-auto rounded-[10px] border border-borde">
-            <table className="w-full text-left text-[13px]">
+            <table className="w-full text-left text-[15px]">
               <thead className="border-b border-borde bg-superficie">
                 <tr className="text-xs tracking-wide text-texto-suave uppercase">
                   <th className="px-4 py-3 font-medium">Alumno</th>
@@ -122,7 +122,7 @@ export default async function Seguimiento() {
                       {ETIQUETAS_TIPO[envio.tipo_reactivacion ?? ''] ?? envio.tipo_reactivacion}
                     </td>
                     <td className="px-4 text-texto-suave tabular">{envio.reactivado_at}</td>
-                    <td className="px-4 font-mono text-[11px] text-texto-tenue">{envio.plantilla_id}</td>
+                    <td className="px-4 font-mono text-[13px] text-texto-tenue">{envio.plantilla_id}</td>
                   </tr>
                 ))}
               </tbody>

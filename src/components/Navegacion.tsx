@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { LogOut } from 'lucide-react'
+import { cerrarSesionAccion } from '@/app/(app)/acciones-sesion'
 
 /**
  * Navegación común. Las tres pantallas son un ciclo —se decide, se envía, se mide— y
@@ -44,7 +46,7 @@ export function Navegacion({ correo, pendientes }: { correo: string | null; pend
                 {pagina.etiqueta}
                 {pagina.href === '/seguimiento' && pendientes > 0 && (
                   <span
-                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] tabular ${
+                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[13px] tabular ${
                       activa ? 'bg-white/20' : 'bg-superficie-hover text-texto-suave'
                     }`}
                   >
@@ -56,9 +58,20 @@ export function Navegacion({ correo, pendientes }: { correo: string | null; pend
           })}
         </nav>
 
-        {correo && (
-          <span className="ml-auto hidden text-[12px] text-texto-tenue sm:block">{correo}</span>
-        )}
+        <div className="ml-auto flex items-center gap-3">
+          {correo && <span className="hidden text-[14px] text-texto-tenue sm:block">{correo}</span>}
+          <form action={cerrarSesionAccion}>
+            <button
+              type="submit"
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+              className="flex items-center gap-1.5 rounded-[6px] border border-borde px-2.5 py-1.5 text-[14px] text-texto-suave hover:bg-superficie hover:text-texto"
+            >
+              <LogOut size={16} strokeWidth={1.5} aria-hidden />
+              <span className="hidden md:inline">Salir</span>
+            </button>
+          </form>
+        </div>
       </div>
     </header>
   )

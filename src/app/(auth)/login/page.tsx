@@ -44,7 +44,7 @@ function Formulario() {
       <p className="mt-1 text-sm text-texto-suave">Reactivación de alumnos de Learning Heroes</p>
 
       {avisoPrevio && (
-        <p className="mt-4 rounded-[6px] bg-aviso/10 px-3 py-2 text-[13px] text-aviso">{avisoPrevio}</p>
+        <p className="mt-4 rounded-[6px] bg-aviso/10 px-3 py-2 text-[15px] text-aviso">{avisoPrevio}</p>
       )}
 
       {estado === 'enviado' ? (

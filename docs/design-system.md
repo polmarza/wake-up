@@ -64,12 +64,16 @@ segmento o de estado lleva texto. Contraste mínimo AA (4.5:1) en texto normal.
 |---|---|---|---|---|
 | H1 | Space Grotesk | 32px | 700 | Título de página |
 | H2 | Space Grotesk | 24px | 600 | Secciones |
-| H3 | Space Grotesk | 18px | 600 | Cabeceras de card |
-| Body | Inter | 15px | 400 | Texto general |
-| Body small | Inter | 13px | 400 | Metadatos, celdas de tabla |
-| Label | Inter | 12px | 500 | Etiquetas de campo (mayúsculas, `letter-spacing: 0.04em`) |
-| Metric | Space Grotesk | 40px | 700 | Números grandes del dashboard, tabulares |
-| Mono | JetBrains Mono | 13px | 400 | IDs, versiones de prompt, valores del bandit |
+| H3 | Space Grotesk | 19px | 600 | Cabeceras de card |
+| Body | Inter | 16px | 400 | Texto general |
+| Body small | Inter | 15px | 400 | Metadatos, celdas de tabla |
+| Label | Inter | 13px | 500 | Etiquetas de campo (mayúsculas, `letter-spacing: 0.04em`) |
+| Metric | Space Grotesk | 40–56px | 700 | Números grandes del dashboard, tabulares |
+| Mono | JetBrains Mono | 15px | 400 | IDs, versiones de prompt, valores del bandit |
+
+**El suelo son 13px, y solo para etiquetas.** Esta herramienta se enseña proyectada y se lee de
+pie: por debajo de eso no se lee a tres metros. El aviso más importante de la aplicación —el que
+explica por qué el uplift no es creíble— estaba escrito a 12px, que es justo donde no se lee.
 
 **Cuerpo del email (previsualización):** se renderiza con tipografías de sistema, no con las de la
 aplicación. Lo que se ve en el panel debe parecerse a lo que verá el alumno en su cliente de correo,

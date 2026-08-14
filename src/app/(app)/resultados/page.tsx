@@ -67,8 +67,8 @@ export default async function Resultados() {
             ].map((fila) => (
               <div key={fila.etiqueta}>
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-[13px] font-medium">{fila.etiqueta}</span>
-                  <span className="text-[12px] text-texto-suave tabular">
+                  <span className="text-[15px] font-medium">{fila.etiqueta}</span>
+                  <span className="text-[14px] text-texto-suave tabular">
                     {fila.grupo.reactivados} de {fila.grupo.alumnos} volvieron
                   </span>
                 </div>
@@ -106,17 +106,17 @@ export default async function Resultados() {
 
         {uplift.holdoutSinReactivaciones && (
           <div className="mt-6 rounded-[10px] border border-aviso/30 bg-aviso/5 px-5 py-4">
-            <p className="text-[13px] font-medium text-aviso">
+            <p className="text-[15px] font-medium text-aviso">
               Este uplift no es creíble, y conviene decirlo antes de que lo diga otro.
             </p>
-            <p className="mt-2 text-[13px] text-texto-suave">
+            <p className="mt-2 text-[15px] text-texto-suave">
               El grupo de control registra <strong>cero</strong> reactivaciones sobre{' '}
               {uplift.holdout.alumnos} alumnos. En datos reales eso no pasa nunca: siempre hay gente
               que vuelve sola, y ese suelo es justo lo que el control existe para medir. Aquí es un
               artefacto del dataset sintético, que solo marca como reactivado a quien recibió un
               email.
             </p>
-            <p className="mt-2 text-[13px] text-texto-suave">
+            <p className="mt-2 text-[15px] text-texto-suave">
               Lo que esta pantalla demuestra es que <strong>la medición está montada</strong>: hay
               grupo de control, se compara contra él, y el número saldría igual de rojo si el sistema
               no funcionara. La magnitud necesita datos reales.
@@ -129,7 +129,7 @@ export default async function Resultados() {
       <section className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-[10px] border border-borde p-5">
           <div className="font-display text-[32px] leading-none font-bold tabular">{reinscripciones}</div>
-          <div className="mt-2 text-[13px] text-texto-suave">
+          <div className="mt-2 text-[15px] text-texto-suave">
             Reinscripciones. Son las únicas reactivaciones que facturan.
           </div>
         </div>
@@ -137,7 +137,7 @@ export default async function Resultados() {
           <div className="font-display text-[32px] leading-none font-bold tabular">
             {Math.round(ingresoEstimado).toLocaleString('es-ES')} €
           </div>
-          <div className="mt-2 text-[13px] text-texto-suave">
+          <div className="mt-2 text-[15px] text-texto-suave">
             Ingreso estimado, a un ticket medio de {Math.round(ticketMedio)} €.
           </div>
         </div>
@@ -145,7 +145,7 @@ export default async function Resultados() {
           <div className="font-display text-[32px] leading-none font-bold tabular">
             {uplift.tratamiento.reactivados - reinscripciones}
           </div>
-          <div className="mt-2 text-[13px] text-texto-suave">
+          <div className="mt-2 text-[15px] text-texto-suave">
             Vueltas sin ingreso inmediato: respuestas y logins. Terminan cursos y compran después.
           </div>
         </div>
@@ -155,7 +155,7 @@ export default async function Resultados() {
       <section className="mt-10">
         <h2 className="font-display text-lg font-semibold">Qué segmento responde mejor</h2>
         <div className="mt-4 overflow-x-auto rounded-[10px] border border-borde">
-          <table className="w-full text-left text-[13px]">
+          <table className="w-full text-left text-[15px]">
             <thead className="border-b border-borde bg-superficie">
               <tr className="text-xs tracking-wide text-texto-suave uppercase">
                 <th className="px-4 py-3 font-medium">Segmento</th>
@@ -196,7 +196,7 @@ export default async function Resultados() {
       <section className="mt-10">
         <h2 className="font-display text-lg font-semibold">Qué está aprendiendo el bandit</h2>
         <div className="mt-4 overflow-x-auto rounded-[10px] border border-borde">
-          <table className="w-full text-left text-[13px]">
+          <table className="w-full text-left text-[15px]">
             <thead className="border-b border-borde bg-superficie">
               <tr className="text-xs tracking-wide text-texto-suave uppercase">
                 <th className="px-4 py-3 font-medium">Plantilla</th>
@@ -216,15 +216,15 @@ export default async function Resultados() {
                     fila.id === mejorPlantilla?.id ? 'bg-exito/5' : ''
                   }`}
                 >
-                  <td className="px-4 font-mono text-[12px]">
+                  <td className="px-4 font-mono text-[14px]">
                     {fila.id}
                     {fila.id === mejorPlantilla?.id && (
-                      <span className="ml-2 rounded-full bg-exito/15 px-2 py-0.5 font-sans text-[11px] font-medium text-exito">
+                      <span className="ml-2 rounded-full bg-exito/15 px-2 py-0.5 font-sans text-[13px] font-medium text-exito">
                         va ganando
                       </span>
                     )}
                     {fila.envios >= 20 && fila.reactivaciones === 0 && (
-                      <span className="ml-2 rounded-full bg-error/10 px-2 py-0.5 font-sans text-[11px] font-medium text-error">
+                      <span className="ml-2 rounded-full bg-error/10 px-2 py-0.5 font-sans text-[13px] font-medium text-error">
                         apagándose
                       </span>
                     )}
@@ -233,7 +233,7 @@ export default async function Resultados() {
                   <td className="px-4 tabular">{fila.envios}</td>
                   <td className="px-4 tabular">{fila.reactivaciones}</td>
                   <td className="px-4 font-medium tabular">{porcentaje(fila.tasaObservada)}</td>
-                  <td className="px-4 font-mono text-[12px] text-texto-tenue tabular">
+                  <td className="px-4 font-mono text-[14px] text-texto-tenue tabular">
                     {fila.alpha} / {fila.beta}
                   </td>
                   <td className="px-4">
@@ -262,7 +262,7 @@ export default async function Resultados() {
           {porTipo.map((fila) => (
             <div key={fila.tipo} className="rounded-[10px] border border-borde px-5 py-4">
               <div className="font-display text-[28px] leading-none font-bold tabular">{fila.total}</div>
-              <div className="mt-2 text-[13px] text-texto-suave">
+              <div className="mt-2 text-[15px] text-texto-suave">
                 {ETIQUETAS_TIPO[fila.tipo] ?? fila.tipo}
               </div>
             </div>

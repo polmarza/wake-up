@@ -23,7 +23,7 @@ const COLOR_SEGMENTO: Record<Segmento, string> = {
 function Badge({ segmento }: { segmento: Segmento }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium whitespace-nowrap"
+      className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[14px] font-medium whitespace-nowrap"
       style={{ backgroundColor: `${COLOR_SEGMENTO[segmento]}1a`, color: COLOR_SEGMENTO[segmento] }}
     >
       <span
@@ -109,7 +109,7 @@ export default async function Cola() {
               {ordenSegmentos.map(([segmento, total]) => (
                 <span
                   key={segmento}
-                  className="flex items-center gap-1.5 text-[12px] text-texto-suave"
+                  className="flex items-center gap-1.5 text-[14px] text-texto-suave"
                 >
                   <span
                     className="size-2 rounded-full"
@@ -132,7 +132,7 @@ export default async function Cola() {
         </p>
       ) : (
         <div className="mt-8 overflow-x-auto rounded-[10px] border border-borde">
-          <table className="w-full text-left text-[13px]">
+          <table className="w-full text-left text-[15px]">
             <thead className="border-b border-borde bg-superficie">
               <tr className="text-xs tracking-wide text-texto-suave uppercase">
                 <th className="px-4 py-3 font-medium">Alumno</th>
@@ -157,12 +157,12 @@ export default async function Cola() {
                         {candidato.nombre} {candidato.apellidos}
                       </span>
                       {conBuzonReal.has(candidato.email.toLowerCase()) && (
-                        <span className="rounded-full bg-rosa/10 px-2 py-0.5 text-[11px] font-medium text-rosa">
+                        <span className="rounded-full bg-rosa/10 px-2 py-0.5 text-[13px] font-medium text-rosa">
                           buzón real
                         </span>
                       )}
                     </div>
-                    <div className="text-[12px] text-texto-tenue">{candidato.email}</div>
+                    <div className="text-[14px] text-texto-tenue">{candidato.email}</div>
                   </td>
                   <td className="px-4">{candidato.curso_nombre}</td>
                   <td className="px-4">
@@ -184,7 +184,7 @@ export default async function Cola() {
                   <td className="px-4 py-2 text-right whitespace-nowrap">
                     <Link
                       href={`/cola/${candidato.id}`}
-                      className={`rounded-[6px] px-2.5 py-1 text-[12px] ${
+                      className={`rounded-[6px] px-2.5 py-1 text-[14px] ${
                         conBorrador.has(candidato.id)
                           ? 'bg-rosa font-medium text-white'
                           : 'border border-borde hover:bg-white'

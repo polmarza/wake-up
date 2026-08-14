@@ -98,7 +98,7 @@ export default function Callback() {
         {fallo ? (
           <>
             <h1 className="font-display text-lg font-bold">{fallo.titulo}</h1>
-            <p className="mt-3 text-[13px] text-texto-suave">{fallo.detalle}</p>
+            <p className="mt-3 text-[15px] text-texto-suave">{fallo.detalle}</p>
             <Link
               href="/login"
               className="mt-6 inline-block rounded-[6px] bg-rosa px-4 py-2 text-sm font-medium text-white"

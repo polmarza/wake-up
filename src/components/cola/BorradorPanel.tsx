@@ -94,7 +94,7 @@ export function BorradorPanel({
           <label htmlFor="cuerpo" className="text-xs font-medium tracking-wide text-texto-suave uppercase">
             Cuerpo
           </label>
-          {editado && <span className="text-[12px] text-aviso">Editado por ti</span>}
+          {editado && <span className="text-[14px] text-aviso">Editado por ti</span>}
         </div>
         <textarea
           id="cuerpo"
@@ -174,7 +174,7 @@ export function BorradorPanel({
         value={instruccion}
         onChange={(evento) => setInstruccion(evento.target.value)}
         placeholder="Instrucción para regenerar (opcional): «más corto», «menciona que puede escribirme»…"
-        className="w-full rounded-[6px] border border-borde px-3 py-2 text-[13px]"
+        className="w-full rounded-[6px] border border-borde px-3 py-2 text-[15px]"
       />
 
       <p className="text-xs text-texto-tenue">

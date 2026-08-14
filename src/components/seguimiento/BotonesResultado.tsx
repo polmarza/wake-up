@@ -32,12 +32,12 @@ export function BotonesResultado({ envioId }: { envioId: string }) {
           onClick={() => registrar(opcion.tipo)}
           disabled={pendiente}
           title={opcion.ayuda}
-          className="rounded-[6px] border border-borde px-2.5 py-1 text-[12px] hover:bg-superficie disabled:opacity-50"
+          className="rounded-[6px] border border-borde px-2.5 py-1 text-[14px] hover:bg-superficie disabled:opacity-50"
         >
           {opcion.etiqueta}
         </button>
       ))}
-      {error && <span className="text-[12px] text-error">{error}</span>}
+      {error && <span className="text-[14px] text-error">{error}</span>}
     </div>
   )
 }
