@@ -9,6 +9,7 @@ import {
   type Segmento,
 } from '@/lib/candidatos/consultas'
 import { entorno, destinatariosRealesPermitidos } from '@/lib/config/entorno'
+import { correoPermitido } from '@/lib/config/acceso'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,9 +41,15 @@ export default async function Cola() {
   const [candidatos, conBorrador] = await Promise.all([obtenerCandidatos(), alumnosConBorrador()])
   const reparto = repartoPorSegmento(candidatos)
 
-  // Las únicas direcciones a las que este sistema puede escribir de verdad. El resto
-  // del dataset es @example.com y no existe.
-  const conBuzonReal = new Set(destinatariosRealesPermitidos())
+  /**
+   * Las únicas direcciones a las que este sistema puede escribir de verdad.
+   *
+   * Se comprueba con `correoPermitido` y no con un `Set.has`: la lista admite
+   * dominios enteros (`@learningheroes.com`), y comparar la dirección contra la
+   * cadena del dominio nunca casa. Ese fue exactamente el fallo que hizo que un
+   * envío pareciera salir sin salir.
+   */
+  const permitidos = destinatariosRealesPermitidos()
   const envioRealActivo = entorno().ENVIO_REAL_HABILITADO
 
   const listos = candidatos.filter((candidato) => conBorrador.has(candidato.id))
@@ -156,7 +163,7 @@ export default async function Cola() {
                       <span className="font-medium">
                         {candidato.nombre} {candidato.apellidos}
                       </span>
-                      {conBuzonReal.has(candidato.email.toLowerCase()) && (
+                      {correoPermitido(candidato.email, permitidos) && (
                         <span className="rounded-full bg-rosa/10 px-2 py-0.5 text-[13px] font-medium text-rosa">
                           buzón real
                         </span>

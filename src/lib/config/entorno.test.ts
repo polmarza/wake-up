@@ -88,3 +88,35 @@ describe('puedeEnviarDeVerdad', () => {
     expect(puedeEnviarDeVerdad('quien.sea@ejemplo.com')).toBe(false)
   })
 })
+
+describe('motivoNoEnviable', () => {
+  it('no da motivo cuando todo está en orden', async () => {
+    const { motivoNoEnviable } = await cargar()
+    expect(motivoNoEnviable('operador@ejemplo.com')).toBeNull()
+  })
+
+  it('acepta una dirección cubierta por un dominio autorizado', async () => {
+    // El caso que rompió un envío de verdad: la lista contiene el dominio, no la
+    // dirección, y comparar con includes() nunca casa.
+    const { motivoNoEnviable } = await cargar({
+      EMAIL_OPERADOR: undefined,
+      ALUMNO_REAL_EMAIL: '@learningheroes.com',
+    })
+    expect(motivoNoEnviable('polm@learningheroes.com')).toBeNull()
+  })
+
+  it('nombra la credencial que falta, en vez de culpar a la dirección', async () => {
+    const { motivoNoEnviable } = await cargar({ RESEND_API_KEY: undefined })
+    expect(motivoNoEnviable('operador@ejemplo.com')).toContain('RESEND_API_KEY')
+  })
+
+  it('nombra el interruptor cuando el envío real está desactivado', async () => {
+    const { motivoNoEnviable } = await cargar({ ENVIO_REAL_HABILITADO: 'false' })
+    expect(motivoNoEnviable('operador@ejemplo.com')).toContain('ENVIO_REAL_HABILITADO')
+  })
+
+  it('dice que la dirección no está autorizada cuando de verdad no lo está', async () => {
+    const { motivoNoEnviable } = await cargar()
+    expect(motivoNoEnviable('laura.aranda@example.com')).toContain('no está autorizada')
+  })
+})
